@@ -1,0 +1,388 @@
+export default function OfficialsTable() {
+    const officials = [
+      // Existing entries
+      {
+        id: 1,
+        name: "Shri. Radhakrishnan B., I.A.S.",
+        designation: "Chairman & Managing Director",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69106216",
+        fax: "-",
+        email: "md@mahagenco.in",
+      },
+      {
+        id: 2,
+        name: "Sanjay Marudkar",
+        designation: "Director (operations)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69106213 Extn.3604",
+        fax: "-",
+        email: "directorop@mahagenco.in",
+      },
+      {
+        id: 3,
+        name: "Balasaheb Thite",
+        designation: "Director (Finance)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69106211 Extn.3605",
+        fax: "-",
+        email: "directorf@mahagenco.in",
+      },
+      {
+        id: 4,
+        name: "Abhay Harne",
+        designation: "Director(Projects)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69106209 Extn.3504",
+        fax: "-",
+        email: "directorproj@mahagenco.in",
+      },
+      {
+        id: 5,
+        name: "Abhay Harne",
+        designation: "Director (Fuel) (Addl. Charge)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69106250 Extn3603",
+        fax: "-",
+        email: "dirmining@mahagenco.in",
+      },
+      {
+        id: 6,
+        name: "Dr. Nitin Wagh",
+        designation: "Executive Director (HR) (Addl. Charge)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200 69853528 Ext. 3655",
+        fax: "-",
+        email: "edhr@mahagenco.in",
+      },
+      {
+        id: 7,
+        name: "Pankaj Nagdeote",
+        designation: "Executive Director (Solar & RE PROJ and CP&C) (Addl. Charge)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200 69853535 Ext. 3515",
+        fax: "-",
+        email: "tdgen@mahagenco.in",
+      },
+      {
+        id: 8,
+        name: "Vivek Rokade",
+        designation: "Executive Director(Projects) (Addl. Charge)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200 69853522 Ext. 3522",
+        fax: "-",
+        email: "tdgpp@mahagenco.in",
+      },
+      {
+        id: 9,
+        name: "Rajesh Patil",
+        designation: "Executive Director (Coal) (Addl. Charge)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200 69853525 Ext. 3525",
+        fax: "-",
+        email: "edfuel@mahagenco.in",
+      },
+      {
+        id: 10,
+        name: "Rajesh Patil",
+        designation: "Executive Director (O&M-I)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200 69853535 Ext. 3535",
+        fax: "-",
+        email: "edom1@mahagenco.in",
+      },
+      {
+        id: 11,
+        name: "Pankaj Sapate",
+        designation: "Executive Director (O&M-II)",
+        address: "Nagpur, Katol Road",
+        phone: "0712-2592759",
+        fax: "-",
+        email: "edom2@mahagenco.in",
+      },
+      {
+        id: 12,
+        name: "Nitin Chandurkar",
+        designation: "Executive Director (IT)",
+        address: "Estrella Batteries, Expansion Compound Dharavi",
+        phone: "022-69425050 Ext. 5050",
+        fax: "-",
+        email: "edit@mahagenco.in",
+      },
+      {
+        id: 13,
+        name: "Dr. Nitin Wagh",
+        designation: "Executive Director (E&S + GARE PALMA-II)",
+        address: "HDIL Towers, Bandra (E)",
+        phone: "022-69852200 69835318 Ext. 3518",
+        fax: "-",
+        email: "edens@mahagenco.in",
+      },
+      {
+        id: 14,
+        name: "Anil Kathoye",
+        designation: "CE (Works)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200 69853535 Ext. 3519",
+        fax: "-",
+        email: "cegw@mahagenco.in",
+      },
+      {
+        id: 15,
+        name: "Pankaj Nagdeote",
+        designation: "CE (CPA)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200 69853535 Ext. 3515",
+        fax: "-",
+        email: "cgmsstores@mahagenco.in",
+      },
+      {
+        id: 16,
+        name: "Chandrashekhar Holambe",
+        designation: "CE (Civil-III)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200 69853535 Ext. 3514",
+        fax: "-",
+        email: "cgmcivil3@mahagenco.in",
+      },
+      {
+        id: 17,
+        name: "Prasanna Kotecha",
+        designation: "CE (RCD)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 3527",
+        fax: "-",
+        email: "rcgen@mahagenco.in",
+      },
+      {
+        id: 18,
+        name: "Vijay Barange",
+        designation: "CE (Fuel Management)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 3524",
+        fax: "-",
+        email: "cefmc@mahagenco.in",
+      },
+      {
+        id: 19,
+        name: "Atul Sonje",
+        designation: "CE (P&P) (ADDL CHARGE)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 3520",
+        fax: "-",
+        email: "cgmgpp@mahagenco.in",
+      },
+      {
+        id: 20,
+        name: "Vijaya Borkar",
+        designation: "CE (PMG)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 3526",
+        fax: "-",
+        email: "cgmpmg@mahagenco.in",
+      },
+      {
+        id: 21,
+        name: "Shailesh Padol",
+        designation: "CE (E&S And GP.II) (I/C)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535",
+        fax: "-",
+        email: "cecoal@mahagenco.in",
+      },
+      {
+        id: 22,
+        name: "Sunil Sonpethkar",
+        designation: "CE (EST) (Addl Charge)",
+        address: "HDIL Tower, Bandra (E) Mumbai-51",
+        phone: "022-26582847",
+        fax: "-",
+        email: "ceest@mahagenco.in",
+      },
+      {
+        id: 23,
+        name: "Rahul Nale",
+        designation: "CE(Technical & Vigilance)(Addl Charge)",
+        address: "Estrella Batteries, Expansion Compound, Dharavi ROAD, MUMBAI 19",
+        phone: "022-69425000 Ext. 5090",
+        fax: "-",
+        email: "cgmtechnical@mahagenco.in",
+      },
+      {
+        id: 24,
+        name: "Girish Kumarwar",
+        designation: "CE(CP&C)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 3515",
+        fax: "-",
+        email: "cpc@mahagenco.in",
+      },
+      {
+        id: 25,
+        name: "Dattatraya Salunkhe",
+        designation: "CE (Civil-II)",
+        address: "Estrella Batteries, Expansion Compound, FIRST FLOOR, PLOT NO. 1",
+        phone: "022-6942500 Ext. 5005",
+        fax: "-",
+        email: "cgmcivil1@mahagenco.in",
+      },
+      {
+        id: 26,
+        name: "Prafulla Kutemate",
+        designation: "CE(RENEWABLE ENERGY)",
+        address: "Hongkong Bank Building, Fort Mumbai-01",
+        phone: "022-22695336 Ext. 324",
+        fax: "-",
+        email: "cehydro@mahagenco.in",
+      },
+      {
+        id: 27,
+        name: "Rahul Sohani",
+        designation: "CE(RE-P&P)",
+        address: "HDIL Tower, Bandra (E) Mumbai-51",
+        phone: "022-69415353 26582424",
+        fax: "-",
+        email: "cespgd@mahagenco.in",
+      },
+      {
+        id: 28,
+        name: "Rajiv Malewar",
+        designation: "CGM (Security)",
+        address: "HDIL Tower, Bandra (E) Mumbai-51",
+        phone: "022-69415322/ Ext. 322",
+        fax: "-",
+        email: "cgmssecurity@mahagenco.in",
+      },
+      {
+        id: 29,
+        name: "Purushottam Warjurkar",
+        designation: "CIRO",
+        address: "HDIL Tower, Bandra (E) Mumbai-51",
+        phone: "022-69415354/ Ext. 354",
+        fax: "-",
+        email: "ciro@mahagenco.in",
+      },
+      {
+        id: 30,
+        name: "Vishawanath Kulkarni",
+        designation: "CGM(Accounts)",
+        address: "Prakashgad, Bandra (E) Mumbai-51",
+        phone: "022-6952200 69853535 Ext. 3658",
+        fax: "-",
+        email: "cgmaccounts@mahagenco.in",
+      },
+      {
+        id: 31,
+        name: "Dipti Gaimar",
+        designation: "CGM(Int. Audit)",
+        address: "HDIL TOWERS, BANDRA (E)",
+        phone: "022-69415301",
+        fax: "-",
+        email: "ia@mahagenco.in",
+      },
+      {
+        id: 32,
+        name: "Anand Kont",
+        designation: "CGM(HR)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-6952200/69853535 Ext. 3513",
+        fax: "-",
+        email: "cgmhr@mahagenco.in",
+      },
+      {
+        id: 33,
+        name: "Pankaj Sharma",
+        designation: "CGM (Finance)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 3516",
+        fax: "-",
+        email: "cgmfinance@mahagenco.in",
+      },
+      {
+        id: 34,
+        name: "Rahul Dubey",
+        designation: "Company Secretary",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 3511",
+        fax: "-",
+        email: "cs@mahagenco.in",
+      },
+      {
+        id: 35,
+        name: "Dr. Kirti Rajesh Kulkarni",
+        designation: "Chief Legal Advisor",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 3657",
+        fax: "-",
+        email: "cla@mahagenco.in",
+      },
+      {
+        id: 36,
+        name: "Rajiv Malewar",
+        designation: "Public Relations Officer",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 3512",
+        fax: "-",
+        email: "pro@mahagenco.in",
+      },
+      {
+        id: 37,
+        name: "Shashikant Papde",
+        designation: "FIR ADV. & CFO",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 354",
+        fax: "-",
+        email: "facfo@mahagenco.in",
+      },
+      {
+        id: 38,
+        name: "H.S.Bhaskare",
+        designation: "CGM (MREL) (Addl Charge)",
+        address: "Prakashgad, Bandra (E), Mumbai-51",
+        phone: "022-69852200/69853535 Ext. 2358",
+        fax: "-",
+        email: "cgm@mrel.in",
+      },
+      {
+        id: 39,
+        name: "Dipti Gaimar",
+        designation: "CGM(Int. Audit)",
+        address: "HDIL TOWERS, BANDRA (E)",
+        phone: "022-69415301",
+        fax: "-",
+        email: "ia@mahagenco.in",
+      },
+    ];
+  
+    return (
+      <div className="overflow-x-auto text-xs">
+        <table className="min-w-full border-collapse">
+          <thead>
+            <tr className="text-white bg-black">
+              <th className="px-4 py-2 text-left border">Sr.NO</th>
+              <th className="px-4 py-2 text-left border">Name</th>
+              <th className="px-4 py-2 text-left border">DESIGNATION</th>
+              <th className="px-4 py-2 text-left border">ADDRESS</th>
+              <th className="px-4 py-2 text-left border">Office Ph.No.</th>
+              <th className="px-4 py-2 text-left border">FAX</th>
+              <th className="px-4 py-2 text-left border">E-mail</th>
+            </tr>
+          </thead>
+          <tbody>
+            {officials.map((official) => (
+              <tr key={official.id} className="text-sm border-b hover:bg-gray-50">
+                <td className="px-4 py-2 border">{official.id}</td>
+                <td className="px-4 py-2 border">{official.name}</td>
+                <td className="px-4 py-2 border">{official.designation}</td>
+                <td className="px-4 py-2 border">{official.address}</td>
+                <td className="px-4 py-2 border">{official.phone}</td>
+                <td className="px-4 py-2 border">{official.fax}</td>
+                <td className="px-4 py-2 border">{official.email}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+  
