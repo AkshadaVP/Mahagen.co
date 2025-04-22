@@ -1,8 +1,12 @@
+// src/components/Header.jsx
 import React from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import CountUp from 'react-countup';
 import BannerSlider from './BannerSlider';
 import MapSection from './MapSection';
 import Footer from './Footer';
 import Navbar from './Navbar';
+
 import emp from '../assets/employee.png';
 import esm from '../assets/ESM.png';
 import announcement from '../assets/announcement.png';
@@ -15,137 +19,175 @@ import thermal from '../assets/thermal.png';
 import hydro from '../assets/hydro.png';
 import solar from '../assets/solar.png';
 import gas from '../assets/gas.png';
-import bgvideo from '../assets/bgvideo.mp4'; // Import the background video
+import bgvideo from '../assets/bgvideo.mp4';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+};
+
+const textVariant = {
+  hidden: { opacity: 0, x: -50 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.8 } }
+};
+
+const imageVariant = {
+  hidden: { opacity: 0, x: 50 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.8, delay: 0.2 } }
+};
 
 const Header = () => {
+  // subtle parallax effect for the image block
+  const { scrollY } = useScroll();
+  const yOffset = useTransform(scrollY, [0, 300], [0, -30]);
+
   return (
-    <header className="relative w-full">
-      {/* Background video */}
-      <video
-        className="absolute top-0 left-0 object-cover w-full h-screen"
-        style={{ zIndex: 1 }}
-        autoPlay
-        loop
-        muted
-      >
-        <source src={bgvideo} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-
-      {/* Navbar */}
-      <Navbar />
-
-      {/* Section Below Navbar */}
-      <section className="relative flex justify-center items-center bg-white mt-[80vh]" style={{ zIndex: 20 }}>
-        <div className="grid grid-cols-6 gap-20 px-8 md:px-16">
-          <div className="flex flex-col items-center justify-center mb-4 shadow-2xl h-35 w-35 rounded-xl">
-            <img src={emp} alt="" className="mb-2" />
-            <p className="text-center">Employee</p>
-          </div>
-          <div className="flex flex-col items-center justify-center mb-4 shadow-2xl h-35 w-35 rounded-xl">
-            <img src={esm} alt="" className="mb-2" />
-            <p className="text-center">ESM</p>
-          </div>
-          <div className="flex flex-col items-center justify-center mb-4 shadow-2xl h-35 w-35 rounded-xl">
-            <img src={announcement} alt="" className="mb-2" />
-            <p className="text-center">Announcements</p>
-          </div>
-          <div className="flex flex-col items-center justify-center mb-4 shadow-2xl h-35 w-35 rounded-xl">
-            <img src={rti} alt="" className="mb-2" />
-            <p className="text-center">RTI</p>
-          </div>
-          <div className="flex flex-col items-center justify-center mb-4 shadow-2xl h-35 w-35 rounded-xl">
-            <img src={tender} alt="" className="mb-2" />
-            <p className="text-center">Tenders</p>
-          </div>
-          <div className="flex flex-col items-center justify-center mb-4 shadow-2xl h-35 w-35 rounded-xl">
-            <img src={mediclaim} alt="" className="mb-2" />
-            <p className="text-center">Mediclaim</p>
-          </div>
+    <>
+      {/* Full-screen header with video background and Navbar */}
+      <header className="relative w-full h-screen">
+        <div className="absolute inset-0 overflow-hidden -z-10">
+          <video className="object-cover w-full h-full" autoPlay loop muted>
+            <source src={bgvideo} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
-      </section>
+        <Navbar />
+      </header>
 
-      <section className="relative flex justify-center items-center bg-white mt-[5vh] px-8 md:px-16" style={{ zIndex: 20 }}>
+      {/* 1) Fade‑up cards section */}
+      <motion.section
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="relative flex items-center justify-center mt-10 bg-white"
+        style={{ zIndex: 20 }}
+      >
+        <div className="grid grid-cols-6 gap-20 px-8 md:px-16">
+          {[emp, esm, announcement, rti, tender, mediclaim].map((src, i) => (
+            <div
+              key={i}
+              className="flex flex-col items-center justify-center shadow-2xl h-35 w-35 rounded-xl"
+            >
+              <img src={src} alt="" className="mb-2" />
+              <p className="text-center">
+                {['Employee','ESM','Announcements','RTI','Tenders','Mediclaim'][i]}
+              </p>
+            </div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* 2) Text fade‑left, images fade‑right with parallax */}
+      <section
+        className="relative flex items-center justify-center px-8 mt-5 bg-white md:px-16"
+        style={{ zIndex: 20 }}
+      >
         <div className="grid grid-cols-1 gap-8 p-8 m-10 md:grid-cols-2">
-          <div className="flex flex-col items-start">
-            <h2 className="mb-4 text-4xl font-bold text-blue-900">WELCOME TO MAHAGENCO</h2>
+          <motion.div
+            variants={textVariant}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="flex flex-col items-start"
+          >
+            <h2 className="mb-4 text-4xl font-bold text-blue-900">
+              WELCOME TO MAHAGENCO
+            </h2>
             <p className="mb-4 text-lg text-gray-600">
               The Mahanirmitee or Mahagenco (Maharashtra State Power Generation Company Limited - MSPGCL)
-              formerly known as MSEB (Maharashtra State Electricity Board) is a major power generating company
-              in the state of Maharashtra, India and a wholly owned subsidiary of Maharashtra State Electricity Board.
+              formerly known as MSEB is a major power generating company in Maharashtra.
             </p>
             <p className="mb-4 text-lg text-gray-600">
-              With a total generation of 13880.55 MW, it is the largest power producing company in India controlled
-              by state government. The power generated by Mahagenco is supplied to Maharashtra. It was a part of Maharashtra
-              State Electricity Board until 6 June 2005.
+              With total generation of 13880.55 MW, it is India’s largest state‑owned power producer.
             </p>
-            <div className="border-[#0097D8] border-2 w-30 text-center h-8 align-middle">
-              <div>
-                <button className="text-blue-500 hover:underline">Explore more</button>
-              </div>
+            <div className="border-[#0097D8] border-2 w-30 h-8 flex items-center justify-center">
+              <button className="text-blue-500 hover:underline">
+                Explore more
+              </button>
             </div>
-          </div>
-          <div className="flex items-center justify-center space-x-4 translate-x-10">
-            <div className="flex-shrink-0">
-              <img
-                src={color}
-                alt="Image 1"
-                className="absolute object-cover rounded-lg shadow-md w-90 h-110 translate-y-[-90px] translate-x-[-130px]"
-              />
-            </div>
+          </motion.div>
+
+          <motion.div
+            style={{ y: yOffset }}
+            variants={imageVariant}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="relative flex items-center justify-center space-x-4"
+          >
+            <img
+              src={color}
+              alt="Color"
+              className="absolute left-0 object-cover rounded-lg shadow-md bottom-10 w-90 h-85"
+            />
             <div className="absolute left-0 top-20">
               <p>STARTED IN</p>
               <p className="text-6xl">1960</p>
             </div>
-            <div className="flex-shrink-0">
-              <img
-                src={bandw}
-                alt="Image 2"
-                className="object-cover w-full h-full rounded-lg shadow-md"
-              />
-            </div>
-          </div>
+            <img
+              src={bandw}
+              alt="Black & White"
+              className="object-cover rounded-lg shadow-md h-140 w-100"
+            />
+          </motion.div>
         </div>
       </section>
 
-      <section className="py-10 mt-20 ml-45 mr-45 bg-[#BFE5FD] rounded-3xl border-2 border-[#0097D8]" style={{ zIndex: 20 }}>
-        <div className="flex-col justify-center max-w-screen-xl px-6 mx-auto">
-          <h2 className="text-xl font-semibold text-center text-white rounded-[30px] bg-[#0097D8] p-2 pl-5 pr-5 w-max mx-auto translate-y-[-65px]">
+      {/* 3) Count‑up numbers section */}
+      <motion.section
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="py-10 mt-20 mx-8 bg-[#BFE5FD] rounded-3xl border-2 border-[#0097D8]"
+        style={{ zIndex: 20 }}
+      >
+        <div className="max-w-screen-xl px-6 mx-auto">
+          <h2 className="text-xl font-semibold text-center text-white bg-[#0097D8] rounded-full p-2 w-max mx-auto -translate-y-16">
             Power Generation Capacity In MW
           </h2>
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 h-35 translate-y-[-20px]">
-            {/* Thermal */}
-            <div className="flex flex-col items-center px-6 py-4 bg-[#BFE5FD] rounded-xl">
-              <img src={thermal} alt="Thermal" className="mb-2 h-15 w-15" />
-              <p className="text-5xl font-semibold text-[#181B31]">10200</p>
-              <p className="text-2xl text-[#181B31]">Thermal</p>
-            </div>
-            {/* Hydro */}
-            <div className="flex flex-col items-center px-6 py-4 bg-[#BFE5FD] rounded-xl">
-              <img src={hydro} alt="Hydro" className="w-12 h-12 mb-4" />
-              <p className="text-5xl font-semibold text-[#181B31]">2580</p>
-              <p className="text-2xl text-[#181B31]">Hydro</p>
-            </div>
-            {/* Solar */}
-            <div className="flex flex-col items-center px-6 py-4 bg-[#BFE5FD] rounded-xl">
-              <img src={solar} alt="Solar" className="w-12 h-12 mb-4" />
-              <p className="text-5xl font-semibold text-[#181B31]">428</p>
-              <p className="text-2xl text-[#181B31]">Solar</p>
-            </div>
-            {/* Gas */}
-            <div className="flex flex-col items-center px-6 py-4 bg-[#BFE5FD] rounded-xl">
-              <img src={gas} alt="Gas" className="w-12 h-12 mb-4" />
-              <p className="text-5xl font-semibold text-[#181B31]">672</p>
-              <p className="text-2xl text-[#181B31]">Gas</p>
-            </div>
+          <div className="grid grid-cols-2 gap-8 -translate-y-8 sm:grid-cols-4">
+            {[
+              { src: thermal, label: 'Thermal', end: 10200 },
+              { src: hydro,   label: 'Hydro',   end: 2580  },
+              { src: solar,   label: 'Solar',   end: 428   },
+              { src: gas,     label: 'Gas',     end: 672   },
+            ].map(({ src, label, end }) => (
+              <div
+                key={label}
+                className="flex flex-col items-center px-3 py-1 bg-[#BFE5FD] rounded-xl"
+              >
+                <img src={src} alt={label} className="mb-2 h-15 w-15" />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1 }}
+                  className="text-5xl font-semibold text-[#181B31]"
+                >
+                  <CountUp end={end} duration={2} separator="," />
+                </motion.div>
+                <p className="text-2xl text-[#181B31]">{label}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </section>
+      </motion.section>
+
+      {/* 4) MapSection fade‑up */}
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+      >
+      <MapSection />
+      </motion.div>
 
       <BannerSlider />
-      <MapSection />
       <Footer />
-    </header>
+    </>
   );
 };
 

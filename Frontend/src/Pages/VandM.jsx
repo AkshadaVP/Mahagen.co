@@ -23,6 +23,16 @@ const VandM = () => {
     setCurrentMissionIndex((prevIndex) => (prevIndex - 1 + missions.length) % missions.length);
   };
 
+  const aboutLinks = [
+    { label: 'About Us',                to: '/about-us'               },
+    { label: 'Our History',             to: '/history'                },
+    { label: 'Vision & Mission',        to: '/vision-mission'         },
+    { label: 'Board of Directors',      to: '/board-of-directors'     },
+    { label: 'Board Members of MSEB',   to: '/board-members'          },
+    { label: 'Key Officials of MSPGCL', to: '/key-officials'          },
+    { label: 'Organization Structure',  to: '/organization-structure' },
+  ];
+
   return (
     <div className="relative">
       {/* Navbar */}
@@ -36,14 +46,14 @@ const VandM = () => {
       />
       
       {/* Section Title */}
-      <div className="translate-y-20 translate-x-30">
+      <div className="translate-y-70 translate-x-30">
         <span className="text-4xl font-bold text-white">Vision & Mission</span>
       </div>
 
       {/* Main Section with Fixed Sidebar */}
-      <div className="flex">
+      <div className="flex mt-20 mb-40 ml-20 translate-y-30">
         {/* Fixed Sidebar on the Left */}
-        <SideLinks/>
+        <SideLinks title="About Us" links={aboutLinks}/>
 
         {/* Right Section with Content */}
         <div className="w-3/4 p-10 ml-auto space-y-10 overflow-y-auto px-50 mt-30">

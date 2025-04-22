@@ -3,3 +3,9 @@
 body{
     font-family: inter
 }
+
+@layer components{
+    .sidebar-css{
+        @apply h-6 w-6 filter invert
+    }
+}

@@ -1,53 +1,110 @@
-import React, { useState } from 'react';
+// src/components/Navbar.jsx
+import React, { useState, useRef, useEffect } from 'react';
 import { Phone, Mail, Search, Volume2, User } from 'react-feather';
 import { Link } from 'react-router-dom';
 import { useUser, useClerk } from '@clerk/clerk-react';
 
 // Images
 import logo from '../assets/demo-hosting-logo-white.png';
+import logoBlack from '../assets/logoblack.png';
 import logoname from '../assets/logo_name_white2.png';
+import logonameBlack from '../assets/logo_name_black.png';
 import amritotstav from '../assets/amritmahotsav.jpg';
 import flag from '../assets/flag.gif';
 import menu from '../assets/menu.png';
+import awards from '../assets/award-sidebar.png';
+import contactUs from '../assets/contactUs-sidebar.png';
+import linksIcon from '../assets/links-sidebar.png';
+import mailIcon from '../assets/mail-sidebar.png';
+import notices from '../assets/notices-sidebar.png';
+import testing from '../assets/test-sidebar.png';
 
 const Navbar = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // Clerk
   const { user } = useUser();
   const { signOut } = useClerk();
 
-  // Toggle sidebar (mobile)
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  // dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const dropdownTimeout = useRef(null);
 
-  // Sign out user
+  // scroll state
+  const [scrolled, setScrolled] = useState(false);
+
+  // mobile sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => setIsSidebarOpen(o => !o);
+  const closeSidebar  = () => setIsSidebarOpen(false);
+
+  // on scroll, toggle header bg
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 100);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const handleSignOut = async () => {
     await signOut();
-    // afterSignOutUrl="/" by default from your main.jsx
   };
 
+  const openDropdown = label => {
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    setActiveDropdown(label);
+  };
+  const closeDropdown = () => {
+    dropdownTimeout.current = setTimeout(() => setActiveDropdown(null), 200);
+  };
+
+  function renderNavLink(label, to) {
+    return (
+      <Link to={to} className="py-1 hover:underline">
+        {label}
+      </Link>
+    );
+  }
+
+  function renderDropdown(label, links) {
+    return (
+      <div
+        className="relative"
+        onMouseEnter={() => openDropdown(label)}
+        onMouseLeave={closeDropdown}
+      >
+        <span className="py-1 cursor-pointer hover:underline">{label}</span>
+        {activeDropdown === label && (
+          <div className="absolute left-0 mt-2 w-[260px] bg-black bg-opacity-90 backdrop-blur-sm text-white rounded shadow-lg z-50">
+            {links.map(([name, path]) => (
+              <Link
+                key={path}
+                to={path}
+                onMouseEnter={() => openDropdown(label)}
+                className="block px-4 py-2 text-sm border-b border-gray-700 hover:bg-gray-700"
+              >
+                {name}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="relative">
+    <div className="fixed top-0 left-0 right-0 z-50">
       {/* Top Blue Bar */}
-      <div className="bg-[#2a3990] text-white py-2 px-4 fixed w-full" style={{ zIndex: 100 }}>
-        <div className="container flex flex-wrap items-center justify-between mx-auto">
-          {/* Left side: phone + mail */}
-          <div className="flex items-center space-x-6">
+      <div className="px-4 py-2 text-white bg-blue-800">
+        <div className="flex items-center justify-between">
+          <div className="flex gap-5 ml-8 text-xs">
             <div className="flex items-center">
               <Phone className="w-4 h-4 mr-1" />
-              <span className="text-sm">022-69425000</span>
+              <span>022-69425000</span>
             </div>
             <div className="flex items-center">
               <Mail className="w-4 h-4 mr-1" />
-              <span className="text-sm">webposting@mahagenco.in</span>
+              <span>webposting@mahagenco.in</span>
             </div>
           </div>
-
-          {/* Right side: top nav controls */}
-          <div className="flex items-center space-x-4 text-sm">
+          <div className="flex items-center gap-3 mr-8 text-sm">
             <a href="#" className="hover:underline">SAP Dashboard</a>
             <span>|</span>
             <a href="#" className="hover:underline">Employee's Area</a>
@@ -68,14 +125,13 @@ const Navbar = () => {
             <span>|</span>
             <span>screen-reader</span>
 
-            {/* Auth Section: shows user icon or Login button */}
+            {/* Authenticated user dropdown */}
             {user ? (
               <div className="relative">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex items-center px-2 py-1 space-x-2 text-black bg-white rounded hover:bg-gray-100"
                 >
-                  {/* Fallback to icon if no user.profileImageUrl */}
                   {user.profileImageUrl ? (
                     <img
                       src={user.profileImageUrl}
@@ -89,416 +145,228 @@ const Navbar = () => {
                     {user.primaryEmailAddress?.emailAddress}
                   </span>
                 </button>
-
                 {isDropdownOpen && (
                   <div className="absolute right-0 z-50 w-40 mt-2 text-black bg-white rounded shadow-md">
-                    <ul className="text-sm">
-                      <li>
-                        <button
-                          onClick={handleSignOut}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100"
-                        >
-                          Sign Out
-                        </button>
-                      </li>
-                    </ul>
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full px-4 py-2 text-left hover:bg-gray-100"
+                    >
+                      Sign Out
+                    </button>
                   </div>
                 )}
               </div>
             ) : (
-              <Link to="/user-signup">
-                  <button className="bg-green-600 text-white px-3 py-1 rounded-sm font-semibold hover:bg-green-700">
+              <>
+                {/* Request Access */}
+                <Link to="/user-signup">
+                  <button className="px-3 py-1 text-sm text-white bg-green-600 rounded-sm hover:bg-green-700">
                     Request Access
                   </button>
-              </Link>
-
+                </Link>
+                {/* Login */}
+                <Link to="/sign-in">
+                  <button className="px-3 py-1 text-sm text-white bg-blue-600 rounded-sm hover:bg-blue-700">
+                    Login
+                  </button>
+                </Link>
+              </>
             )}
           </div>
         </div>
       </div>
 
-      {/* Logo + top spacing */}
-      <div className="relative w-full pt-12 bg-transparent border-b" style={{ zIndex: 80 }}>
-        <div className="container flex items-center justify-between pt-4 pb-4 pl-8 pr-8 mx-auto">
-          {/* Left: Logo + Name */}
-          <div className="flex items-center space-x-4">
-            <div className="relative w-40 h-16">
-              <img className="w-full h-full" src={logo} alt="logo" />
-            </div>
-            <div className="flex flex-col">
-              <img src={logoname} alt="logo name" />
-            </div>
-          </div>
-
-          {/* Right: images */}
-          <div className="flex items-center space-x-2">
-            <div>
-              <img className="h-20" src={amritotstav} alt="amrit mahotsav" />
-            </div>
-            <div>
-              <img className="h-20 ml-5" src={flag} alt="flag" />
-            </div>
-          </div>
+      {/* Logo Bar */}
+      <div
+        className={`flex justify-between items-center p-2 transition-colors ${
+          scrolled ? 'bg-white' : 'bg-transparent'
+        }`}
+      >
+        <div className="flex items-center gap-5 ml-8">
+          <img
+            src={scrolled ? logoBlack : logo}
+            alt="logo"
+            className="object-contain h-20"
+          />
+          <img
+            src={scrolled ? logonameBlack : logoname}
+            alt="logo name"
+            className="object-contain h-20"
+          />
+        </div>
+        <div className="flex items-center gap-5 mr-8">
+          <img src={amritotstav} alt="amrit mahotsav" className="h-20" />
+          <img src={flag} alt="flag" className="h-20" />
         </div>
       </div>
 
       {/* Main Navigation */}
-      <nav className="relative bg-transparent h-30" style={{ zIndex: 80 }}>
-        <div className="container mx-auto">
-          <div className="flex justify-between">
-            {/* Desktop nav with submenus */}
-            <div className="hidden w-full space-x-1 overflow-x-auto text-sm font-semibold text-white h-80 md:flex">
-              {/* Home */}
-              <Link to="/" className="h-12 px-4 py-3 text-white transition-colors">
-                Home
-              </Link>
+      <div
+        className={`relative flex items-center p-2 text-sm font-medium pl-14 gap-7 transition-colors ${
+          scrolled ? 'bg-white text-black' : 'bg-transparent text-white'
+        }`}
+      >
+        {renderNavLink('Home', '/')}
+        {renderDropdown('About Us', [
+          ['About Us', '/about-us'],
+          ['Our History', '/history'],
+          ['Vision & Mission', '/vision-mission'],
+          ['Board of Directors of MSPGCL', '/board-of-directors'],
+          ['Board Members of MSEB Holding', '/board-mseb'],
+          ['Key Officials of MSPGCL', '/history'],
+          ['Organization Structure', '/organization-structure'],
+        ])}
+        {renderDropdown('Generation', [
+          ['Installed Capacity', '/installed-capacity'],
+          ['Current Generation', '/current-generation'],
+        ])}
+        {renderDropdown('Projects', [
+          ['Thermal Projects', '/thermal-projects'],
+          ['Solar Projects', '/solar'],
+          ['GP-II Coal Mine', '/gp-ii'],
+        ])}
+        {renderDropdown('Subsidiaries', [
+          ['Mahagenco Renewable Energy Ltd', '/subsidiaries/mahagenco-renewable'],
+          ['Mahagenco NTPC Green Energy Ltd', '/subsidiaries/mahagenco-ntpc-green'],
+          ['Mahaguj Collieries Ltd', '/subsidiaries/mahaguj-collieries'],
+          ['Dhopave', '/subsidiaries/dhopave'],
+          ['UCM Coal Company Ltd', '/subsidiaries/ucm-coal'],
+        ])}
+        {renderDropdown('Auction', [
+          ['Auction', '/auction'],
+          ['List of e-Auction', '/list-of-eauction'],
+        ])}
+        {renderNavLink('Financial Performance', '/financial-performance')}
+        {renderNavLink('E-procurement Portal', '/e-procurement')}
+        {renderDropdown('Regulatory & Commercial', [
+          ['Regulatory & Commercial', '/regulatory'],
+          ['Rules & Regulations', '/rules-regulations'],
+          ['Regulatory Petitions', '/regulatory-petitions'],
+          ['Approved Tariff', '/approved-tariff'],
+          ['Approved PPA', '/approved-ppa'],
+          ['Monthly Fuel Cost and CV Data', '/monthly-fuel'],
+          ['Fuel Utilisation Plan', '/fuel-utilisation'],
+        ])}
+        {renderDropdown('Media', [
+          ['Photo Gallery', '/photo-gallery'],
+          ['Video Gallery', '/video-gallery'],
+          ['New Project CSR', '/new-project-csr'],
+          ['Awards/Recognition', '/awards-recognition'],
+          ['Press Release', '/press-release'],
+          ['Srujan Magazine', '/srujan-magazine'],
+        ])}
+        {renderDropdown('Career', [
+          ['Advertisement', '/advertisement'],
+          ['Exam Process Related Notification', '/exam-process'],
+          ['Result-Select List/Wait List', '/result-select'],
+        ])}
 
-              {/* About Us Section with Dropdown */}
-              <div className="relative group">
-                <Link to="/about-us" className="inline-block h-12 px-4 py-3 transition-colors">
-                  About Us
-                </Link>
-                <div
-                  className="absolute left-0 hidden bg-black opacity-50 text-white group-hover:block max-h-[300px] w-[300px] overflow-hidden transition-all duration-300 ease-in-out"
-                  style={{ zIndex: 200 }}
-                >
-                  <ul>
-                    <li>
-                      <Link
-                        to="/about-us"
-                        className="inline-block px-4 py-3 text-white transition-colors border-b hover:bg-gray-100"
-                      >
-                        About Us
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/our-history" className="block px-4 py-2 border-b hover:bg-gray-200">
-                        Our History
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/vision-mission" className="block px-4 py-2 border-b hover:bg-gray-200">
-                        Vision &amp; Mission
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/board-of-directors" className="block px-4 py-2 border-b hover:bg-gray-200">
-                        Board of Directors of MSPGCL
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/board-members" className="block px-4 py-2 border-b hover:bg-gray-200">
-                        Board Members of MSEB Holding
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/history" className="block px-4 py-2 border-b hover:bg-gray-200">
-                        Key Officials of MSPGCL
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/organization-structure" className="block px-4 py-2 border-b hover:bg-gray-200">
-                        Organization Structure
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+        {/* Mobile sidebar toggle */}
+        <button
+          onClick={toggleSidebar}
+          aria-label="Open sidebar"
+          className={`p-2 rounded hover:bg-white/10 ${
+            scrolled ? 'text-black' : 'text-white'
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg"
+               className="w-5 h-5"
+               fill="none"
+               stroke="currentColor"
+               viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
 
-              {/* Generation Section with Dropdown */}
-              <div className="relative group">
-                <Link to="/generation" className="inline-block px-4 py-3 transition-colors">
-                  Generation
-                </Link>
-                <div
-                  className="absolute left-0 hidden bg-black opacity-50 text-white group-hover:block max-h-[300px] w-[300px] overflow-hidden transition-all duration-300 ease-in-out"
-                  style={{ zIndex: 200 }}
-                >
-                  <ul>
-                    <li>
-                      <Link to="/installed-capacity" className="block px-4 py-2 border-b">
-                        Installed Capacity
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/current-generation" className="block px-4 py-2 border-b">
-                        Current Generation
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Projects Section with Dropdown */}
-              <div className="relative group">
-                <Link to="/projects" className="inline-block px-4 py-3 transition-colors">
-                  Projects
-                </Link>
-                <div
-                  className="absolute left-0 hidden bg-black opacity-50 text-white group-hover:block max-h-[300px] w-[300px] overflow-hidden transition-all duration-300 ease-in-out"
-                  style={{ zIndex: 200 }}
-                >
-                  <ul>
-                    <li>
-                      <Link to="/thermal-projects" className="block px-4 py-2 border-b">
-                        Thermal Projects
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/projects/solar" className="block px-4 py-2 border-b">
-                        Solar Projects
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/projects/gp-ii" className="block px-4 py-2 border-b">
-                        GP-II Coal Mine
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Subsidiaries Section with Dropdown */}
-              <div className="relative group">
-                <Link to="/subsidiaries" className="inline-block px-4 py-3 transition-colors">
-                  Subsidiaries
-                </Link>
-                <div
-                  className="absolute left-0 hidden bg-black opacity-50 text-white group-hover:block max-h-[300px] w-[300px] overflow-hidden transition-all duration-300 ease-in-out"
-                  style={{ zIndex: 200 }}
-                >
-                  <ul>
-                    <li>
-                      <Link to="/subsidiaries/mahagenco-renewable" className="block px-4 py-2 border-b">
-                        Mahagenco Renewable Energy Ltd
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/subsidiaries/mahagenco-ntpc-green" className="block px-4 py-2 border-b">
-                        Mahagenco NTPC Green Energy Ltd
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/subsidiaries/mahaguj-collieries" className="block px-4 py-2 border-b">
-                        Mahaguj Collieries Ltd
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/subsidiaries/dhopave" className="block px-4 py-2 border-b">
-                        Dhopave
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/subsidiaries/ucm-coal" className="block px-4 py-2 border-b">
-                        UCM Coal Company Ltd
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Auction Section with Dropdown */}
-              <div className="relative group">
-                <Link to="/auction" className="inline-block px-4 py-3 transition-colors">
-                  Auction
-                </Link>
-                <div
-                  className="absolute left-0 hidden bg-black opacity-50 text-white group-hover:block max-h-[300px] w-[300px] overflow-hidden transition-all duration-300 ease-in-out"
-                  style={{ zIndex: 200 }}
-                >
-                  <ul>
-                    <li>
-                      <Link to="/auction" className="block px-4 py-2 border-b">
-                        Auction
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/list-of-eauction" className="block px-4 py-2 border-b">
-                        List of e-Auction
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Financial Performance Section */}
-              <Link
-                to="/financial-performance"
-                className="inline-block h-12 px-4 py-3 transition-colors"
-              >
-                Financial Performance
-              </Link>
-
-              {/* E-procurement Portal Section */}
-              <Link
-                to="/e-procurement"
-                className="inline-block h-12 px-4 py-3 transition-colors"
-              >
-                E-procurement Portal
-              </Link>
-
-              {/* Regulatory & Commercial Section with Dropdown */}
-              <div className="relative group">
-                <Link to="/regulatory" className="inline-block px-4 py-3 transition-colors">
-                  Regulatory &amp; Commercial
-                </Link>
-                <div
-                  className="absolute left-0 hidden bg-black opacity-50 text-white group-hover:block max-h-[300px] w-[300px] overflow-hidden transition-all duration-300 ease-in-out"
-                  style={{ zIndex: 200 }}
-                >
-                  <ul>
-                    <li>
-                      <Link to="/regulatory" className="block px-4 py-2 border-b">
-                        Regulatory &amp; Commercial
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/rules-regulations" className="block px-4 py-2 border-b">
-                        Rules &amp; Regulations
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/regulatory-petitions" className="block px-4 py-2 border-b">
-                        Regulatory Petitions
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/approved-tariff" className="block px-4 py-2 border-b">
-                        Approved Tariff
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/approved-ppa" className="block px-4 py-2 border-b">
-                        Approved PPA
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/monthly-fuel" className="block px-4 py-2 border-b">
-                        Monthly Fuel Cost and CV Data
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/fuel-utilisation" className="block px-4 py-2 border-b">
-                        Fuel Utilisation Plan
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Media Section with Dropdown */}
-              <div className="relative group">
-                <Link to="/media" className="inline-block px-4 py-3 transition-colors">
-                  Media
-                </Link>
-                <div
-                  className="absolute left-0 hidden bg-black opacity-50 text-white group-hover:block max-h-[300px] w-[300px] overflow-hidden transition-all duration-300 ease-in-out"
-                  style={{ zIndex: 200 }}
-                >
-                  <ul>
-                    <li>
-                      <Link to="/photo-gallery" className="block px-4 py-2 border-b">
-                        Photo Gallery
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/video-gallery" className="block px-4 py-2 border-b">
-                        Video Gallery
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/new-project-csr" className="block px-4 py-2 border-b">
-                        New Project CSR
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/awards-recognition" className="block px-4 py-2 border-b">
-                        Awards/Recognition
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/press-release" className="block px-4 py-2 border-b">
-                        Press Release
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/srujan-magazine" className="block px-4 py-2 border-b">
-                        Srujan Magazine
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Career Section with Dropdown */}
-              <div className="relative group">
-                <Link to="/career" className="inline-block px-3 py-3 transition-colors">
-                  Career
-                </Link>
-                <div
-                  className="absolute left-0 hidden bg-black opacity-50 text-white group-hover:block max-h-[300px] w-[200px] overflow-hidden transition-all duration-300 ease-in-out"
-                  style={{ zIndex: 200 }}
-                >
-                  <ul>
-                    <li>
-                      <Link to="/advertisement" className="block px-4 py-2 border-b">
-                        Advertisement
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/exam-process" className="block px-4 py-2 border-b">
-                        Exam Process Related Notification
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/result-select" className="block px-4 py-2 border-b">
-                        Result-Select List/Wait List
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Hamburger menu button (mobile) */}
-            <button className="p-3 ml-auto md:hidden" onClick={toggleSidebar}>
-              <img src={menu} alt="Menu" className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Sidebar for Mobile */}
+      {/* Mobile sidebar backdrop */}
       {isSidebarOpen && (
-        <div className="fixed inset-0" style={{ zIndex: 300 }}>
-          <div className="h-full bg-black bg-opacity-50">
-            <div className="flex justify-end p-4">
-              <button onClick={toggleSidebar} className="text-white">
-                <img src={menu} alt="Close Menu" />
-              </button>
-            </div>
-            <div className="flex items-center justify-center h-full">
-              <div className="p-8 bg-white rounded-lg w-80">
-                <h2 className="mb-4 text-2xl font-bold">Menu</h2>
-                <ul className="space-y-4">
-                  {/* Same links as main nav, but simpler side version */}
-                  <li><Link to="/">Home</Link></li>
-                  <li><Link to="/about-us">About Us</Link></li>
-                  <li><Link to="/generation">Generation</Link></li>
-                  <li><Link to="/projects">Projects</Link></li>
-                  <li><Link to="/subsidiaries">Subsidiaries</Link></li>
-                  <li><Link to="/auction">Auction</Link></li>
-                  <li><Link to="/financial-performance">Financial Performance</Link></li>
-                  <li><Link to="/e-procurement">E-procurement Portal</Link></li>
-                  <li><Link to="/regulatory">Regulatory</Link></li>
-                  <li><Link to="/media">Media</Link></li>
-                  <li><Link to="/career">Career</Link></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div
+          className="fixed inset-0 z-40 bg-black/50"
+          onClick={closeSidebar}
+        />
       )}
+
+      {/* Mobile sliding sidebar */}
+      <aside
+        className={`
+          fixed top-0 right-0 h-full w-64 bg-[#1f2a44] text-white z-50
+          flex flex-col justify-between
+          transform transition-transform duration-300
+          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}
+        `}
+      >
+        {/* Close button */}
+        <div className="flex justify-end p-4">
+          <button onClick={closeSidebar} aria-label="Close sidebar"
+                  className="p-1 rounded hover:bg-white/10">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 className="w-6 h-6"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Logo at top */}
+        <div className="px-6 mt-8 mb-10">
+          <img src={logoname} alt="logo name" className="object-contain w-full" />
+        </div>
+
+        {/* Sidebar links */}
+        <nav className="flex-1 px-8 mt-6">
+          <ul className="space-y-6">
+            <li>
+              <Link to="/testing-laboratory" className="flex items-center gap-3 hover:text-blue-300">
+                <img src={testing} alt="" className="sidebar-css" />
+                <span>Testing Laboratory</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/notices" className="flex items-center gap-3 hover:text-blue-300">
+                <img src={notices} alt="" className="sidebar-css" />
+                <span>Notices</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/award" className="flex items-center gap-3 hover:text-blue-300">
+                <img src={awards} alt="" className="sidebar-css" />
+                <span>Award</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/mail" className="flex items-center gap-3 hover:text-blue-300">
+                <img src={mailIcon} alt="" className="sidebar-css" />
+                <span>Mail</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/links" className="flex items-center gap-3 hover:text-blue-300">
+                <img src={linksIcon} alt="" className="sidebar-css" />
+                <span>Links</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/contact-us" className="flex items-center gap-3 hover:text-blue-300">
+                <img src={contactUs} alt="" className="sidebar-css" />
+                <span>Contact Us</span>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+
+        {/* Footer contact info */}
+        <footer className="px-6 py-8 space-y-1 text-xs text-gray-300 border-t border-white/20">
+          <p className="text-lg">022-69425000</p>
+          <p>Maharashtra State Power Generation Co. Ltd.</p>
+          <p>PRAKASHGAD, Plot No. G-9, Bandra (East)</p>
+          <p>Mumbai-400 051.</p>
+        </footer>
+      </aside>
     </div>
   );
 };
