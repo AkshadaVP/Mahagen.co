@@ -79,7 +79,7 @@ router.put('/:id', async (req, res) => {
 
         // ✅ Compose mail
         const mailOptions = {
-          from: `Mahajan.co <${process.env.EMAIL_USER}>`,
+          from: `<${process.env.EMAIL_USER}>`,
           to: request.email,
           subject: 'Your Mahajan.co Login Access',
           text: `🎉 You're approved!

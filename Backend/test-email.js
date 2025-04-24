@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const mailOptions = {
-  from: `Mahajan.co <${process.env.EMAIL_USER}>`,
+  from: `<${process.env.EMAIL_USER}>`,
   to: 'your-own-email@gmail.com', // test with your email
   subject: '🔧 Test Email from Mahajan.co',
   text: '✅ If you received this, nodemailer is working!',
