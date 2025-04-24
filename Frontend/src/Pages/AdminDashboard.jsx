@@ -16,7 +16,7 @@ const AdminDashboard = () => {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch(`http://178.162.171.129:5000/api/requests?status=pending`);
+      const res = await fetch(`https://mahagen-co.onrender.com/api/requests?status=pending`);
       const data = await res.json();
       setRequests(data);
       setLoading(false);
@@ -28,7 +28,7 @@ const AdminDashboard = () => {
 
   const updateStatus = async (id, status) => {
     try {
-      const res = await fetch(`http://178.162.171.129:5000/api/requests/${id}`, {
+      const res = await fetch(`https://mahagen-co.onrender.com/api/requests/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

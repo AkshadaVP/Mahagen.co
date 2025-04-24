@@ -17,7 +17,7 @@ const UserSignUp = () => {
     setError('');
 
     try {
-      const res = await fetch(`http://178.162.171.129:5000/api/requests`, {
+      const res = await fetch(`https://mahagen-co.onrender.com/api/requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
