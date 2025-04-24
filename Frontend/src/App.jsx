@@ -48,11 +48,11 @@ export default function App() {
         <Route path="/gp-ii"     element={<GpIiCoalMine />} />
 
 
+        <Route path="/redirect-after-login" element={<RedirectAfterLogin />} />
 
         <Route path="/user-signup"        element={<UserSignUp />} />
         <Route path="/sign-in"            element={<UserSignIn />} />
         <Route path="/user-dashboard"     element={<UserDashboard />} />
-        <Route path="/redirect-after-login" element={<RedirectAfterLogin />} />
 
         <Route
           path="/admin-dashboard"

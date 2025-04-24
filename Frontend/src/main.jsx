@@ -15,7 +15,7 @@ createRoot(document.getElementById('root')).render(
     <ClerkProvider
       publishableKey={PUBLISHABLE_KEY}
       navigate={(to) => window.location.assign(to)} // ✅ FIXED: Proper navigation trigger
-      afterSignInUrl="/redirect-after-login"
+      fallbackRedirectUrl="/redirect-after-login"
       afterSignOutUrl="/"
     >
       <App />
