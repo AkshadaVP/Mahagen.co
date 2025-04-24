@@ -16,7 +16,7 @@ const AdminDashboard = () => {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/requests?status=pending');
+      const res = await fetch(`http://178.162.171.129:5000/api/requests?status=pending`);
       const data = await res.json();
       setRequests(data);
       setLoading(false);
@@ -28,7 +28,7 @@ const AdminDashboard = () => {
 
   const updateStatus = async (id, status) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/requests/${id}`, {
+      const res = await fetch(`http://178.162.171.129:5000/api/requests/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -50,28 +50,28 @@ const AdminDashboard = () => {
     if (isAdmin) fetchRequests();
   }, [isAdmin]);
 
-  if (!isLoaded) return <p className="text-center mt-10">Checking authentication...</p>;
+  if (!isLoaded) return <p className="mt-10 text-center">Checking authentication...</p>;
 
   if (!isAdmin) {
     return (
-      <div className="text-center mt-10 text-red-600 font-semibold">
+      <div className="mt-10 font-semibold text-center text-red-600">
         🚫 Access Denied: You are not authorized to view this page.
       </div>
     );
   }
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (loading) return <p className="mt-10 text-center">Loading...</p>;
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow rounded">
-      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+    <div className="max-w-4xl p-6 mx-auto mt-10 bg-white rounded shadow">
+      <h1 className="mb-6 text-2xl font-bold">Admin Dashboard</h1>
 
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && <p className="mb-4 text-red-500">{error}</p>}
 
       {requests.length === 0 ? (
         <p>No pending requests found.</p>
       ) : (
-        <table className="w-full table-auto text-sm border">
+        <table className="w-full text-sm border table-auto">
           <thead>
             <tr className="bg-gray-200">
               <th className="px-3 py-2 border">Name</th>
@@ -85,19 +85,19 @@ const AdminDashboard = () => {
               <tr key={req._id} className="text-center border-t">
                 <td className="px-3 py-2 border">{req.name}</td>
                 <td className="px-3 py-2 border">{req.email}</td>
-                <td className="px-3 py-2 border capitalize">{req.status}</td>
-                <td className="px-3 py-2 border space-x-2">
+                <td className="px-3 py-2 capitalize border">{req.status}</td>
+                <td className="px-3 py-2 space-x-2 border">
                   {req.status === 'pending' && (
                     <>
                       <button
                         onClick={() => updateStatus(req._id, 'approved')}
-                        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                        className="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600"
                       >
                         Approve
                       </button>
                       <button
                         onClick={() => updateStatus(req._id, 'rejected')}
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                        className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                       >
                         Reject
                       </button>

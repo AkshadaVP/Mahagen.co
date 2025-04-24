@@ -17,7 +17,7 @@ const UserSignUp = () => {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/requests', {
+      const res = await fetch(`http://178.162.171.129:5000/api/requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -36,12 +36,12 @@ const UserSignUp = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-6">User Sign Up</h1>
+    <div className="flex items-center justify-center min-h-screen px-4 bg-gray-100">
+      <div className="w-full max-w-md p-8 bg-white rounded shadow-md">
+        <h1 className="mb-6 text-2xl font-bold text-center">User Sign Up</h1>
 
         {submitted ? (
-          <p className="text-green-600 font-semibold text-center">
+          <p className="font-semibold text-center text-green-600">
             ✅ Your request has been submitted. We'll contact you soon!
           </p>
         ) : (
@@ -50,7 +50,7 @@ const UserSignUp = () => {
               type="text"
               name="name"
               placeholder="Full Name"
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full p-2 border border-gray-300 rounded"
               onChange={handleChange}
               required
             />
@@ -58,17 +58,17 @@ const UserSignUp = () => {
               type="email"
               name="email"
               placeholder="Email Address"
-              className="w-full border border-gray-300 p-2 rounded"
+              className="w-full p-2 border border-gray-300 rounded"
               onChange={handleChange}
               required
             />
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+              className="w-full py-2 text-white transition bg-blue-600 rounded hover:bg-blue-700"
             >
               Submit Request
             </button>
-            {error && <p className="text-red-600 text-sm">{error}</p>}
+            {error && <p className="text-sm text-red-600">{error}</p>}
           </form>
         )}
       </div>
