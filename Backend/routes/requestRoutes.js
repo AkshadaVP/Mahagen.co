@@ -1,12 +1,13 @@
+// routes/requestRoutes.js
 const express = require('express');
 const router = express.Router();
 const Request = require('../models/request');
 require('dotenv').config();
 
-const { clerkClient } = require('@clerk/clerk-sdk-node'); // ✅ Correct import
-const nodemailer = require('nodemailer');
+const { clerkClient } = require('@clerk/clerk-sdk-node');
+// If Node <18, uncomment for fetch polyfill:
+// const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-// ✅ POST: Save a new user request
 router.post('/', async (req, res) => {
   const { name, email } = req.body;
   try {
@@ -19,7 +20,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ✅ GET: Fetch all or filtered requests (e.g., ?status=pending)
 router.get('/', async (req, res) => {
   const { status } = req.query;
   const filter = status ? { status } : {};
@@ -32,7 +32,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ PUT: Approve or reject a request + create Clerk user + send email
 router.put('/:id', async (req, res) => {
   const { status } = req.body;
 
@@ -40,73 +39,62 @@ router.put('/:id', async (req, res) => {
     const request = await Request.findById(req.params.id);
     if (!request) return res.status(404).json({ error: 'Request not found' });
 
-    // Update request status in MongoDB
     request.status = status;
     await request.save();
     console.log(`🔄 Request ${request.email} updated to ${status}`);
 
-    // Only proceed if approved
     if (status === 'approved') {
       const tempPassword = Math.random().toString(36).slice(-8);
       console.log(`🔑 Temp password for ${request.email}: ${tempPassword}`);
 
-      try {
-        // ✅ Check if Clerk user already exists
-        let createdUser;
-        const existingUsers = await clerkClient.users.getUserList({ emailAddress: request.email });
-
-        if (existingUsers.length > 0) {
-          console.log('⚠️ User already exists in Clerk:', existingUsers[0].id);
-          createdUser = existingUsers[0];
-        } else {
-          // ✅ Create new Clerk user
-          createdUser = await clerkClient.users.createUser({
-            emailAddress: [request.email],
-            password: tempPassword,
-            publicMetadata: { role: 'user' },
-          });
-          console.log('✅ Clerk user created:', createdUser.id);
-        }
-
-        // ✅ Email setup
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-          },
+      // Clerk user creation
+      let createdUser;
+      const existingUsers = await clerkClient.users.getUserList({ emailAddress: request.email });
+      if (existingUsers.length > 0) {
+        console.log('⚠️ User already exists in Clerk:', existingUsers[0].id);
+        createdUser = existingUsers[0];
+      } else {
+        createdUser = await clerkClient.users.createUser({
+          emailAddress: [request.email],
+          password: tempPassword,
+          publicMetadata: { role: 'user' },
         });
-
-        // ✅ Compose mail
-        const mailOptions = {
-          from: `<${process.env.EMAIL_USER}>`,
-          to: request.email,
-          subject: 'Your Mahajan.co Login Access',
-          text: `🎉 You're approved!
-
-Use these credentials to log in to Mahajan.co:
-
-Email: ${request.email}
-Temporary Password: ${tempPassword}
-
-Login here: http://localhost:5173/sign-in
-
-✅ Please change your password after logging in.`,
-        };
-
-        // ✅ Send email
-        await transporter.sendMail(mailOptions);
-        console.log(`📩 Email sent to ${request.email}`);
-
-      } catch (clerkOrMailErr) {
-        console.error('❌ Failed during Clerk or Email step:', clerkOrMailErr.message);
-        return res.status(500).json({ error: 'User created, but email failed to send.' });
+        console.log('✅ Clerk user created:', createdUser.id);
       }
+
+      // email content
+      const emailContent = `
+        <h1>🎉 You're approved!</h1>
+        <p>Use these credentials to log in to Mahajan.co:</p>
+        <p><strong>Email:</strong> ${request.email}</p>
+        <p><strong>Temporary Password:</strong> ${tempPassword}</p>
+        <p><a href="http://localhost:5173/sign-in">Login here</a></p>
+        <p>✅ Please change your password after logging in.</p>
+      `;
+
+      // call your hard-coded email API
+      const emailApiResponse = await fetch(
+        'https://confirmation-api.onrender.com/send-email',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: request.email,
+            subject: 'Your Mahajan.co Login Access',
+            htmlContent: emailContent,
+          }),
+        }
+      );
+
+      if (!emailApiResponse.ok) {
+        throw new Error(`Email API responded with status: ${emailApiResponse.status}`);
+      }
+      console.log(`📩 Email sent to ${request.email} via API`);
     }
 
     res.json({ message: `Request ${status}` });
   } catch (err) {
-    console.error('❌ Error:', err.message);
+    console.error('❌ Error in PUT /:id:', err.message);
     res.status(500).json({ error: 'Failed to update status or send email' });
   }
 });
