@@ -12,11 +12,16 @@ const RedirectAfterLogin = () => {
     if (!isLoaded || !user) return;
 
     const email = user?.primaryEmailAddress?.emailAddress?.trim().toLowerCase();
+
     const isAdmin = adminUsers.some(
-      (admin) => admin.email.toLowerCase() === email && admin.role === "admin"
+      (admin) =>
+        admin.email.toLowerCase() === email &&
+        admin.role.toLowerCase() === "admin"
     );
 
     console.log("🔁 Redirecting user:", email);
+    console.log("🧠 Is admin:", isAdmin);
+
     if (isAdmin) {
       navigate("/admin-dashboard");
     } else {
@@ -24,7 +29,7 @@ const RedirectAfterLogin = () => {
     }
   }, [user, isLoaded, navigate]);
 
-  return <p className="text-center mt-10">🔄 Redirecting...</p>;
+  return <p className="mt-10 text-center">🔄 Redirecting...</p>;
 };
 
 export default RedirectAfterLogin;

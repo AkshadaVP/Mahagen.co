@@ -49,11 +49,6 @@ export default function App() {
 
 
         <Route path="/redirect-after-login" element={<RedirectAfterLogin />} />
-
-        <Route path="/user-signup"        element={<UserSignUp />} />
-        <Route path="/sign-in"            element={<UserSignIn />} />
-        <Route path="/user-dashboard"     element={<UserDashboard />} />
-
         <Route
           path="/admin-dashboard"
           element={
@@ -62,6 +57,11 @@ export default function App() {
             </ProtectedAdminRoute>
           }
         />
+        <Route path="/user-signup"        element={<UserSignUp />} />
+        <Route path="/sign-in"            element={<UserSignIn />} />
+        <Route path="/user-dashboard"     element={<UserDashboard />} />
+
+        
       </Routes>
     </Router>
   );
