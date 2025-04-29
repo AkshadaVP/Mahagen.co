@@ -8,7 +8,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69106216",
         fax: "-",
-        email: "md@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 2,
@@ -17,7 +17,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69106213 Extn.3604",
         fax: "-",
-        email: "directorop@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 3,
@@ -26,7 +26,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69106211 Extn.3605",
         fax: "-",
-        email: "directorf@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 4,
@@ -35,7 +35,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69106209 Extn.3504",
         fax: "-",
-        email: "directorproj@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 5,
@@ -44,7 +44,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69106250 Extn3603",
         fax: "-",
-        email: "dirmining@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 6,
@@ -53,7 +53,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200 69853528 Ext. 3655",
         fax: "-",
-        email: "edhr@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 7,
@@ -62,7 +62,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200 69853535 Ext. 3515",
         fax: "-",
-        email: "tdgen@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 8,
@@ -71,7 +71,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200 69853522 Ext. 3522",
         fax: "-",
-        email: "tdgpp@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 9,
@@ -80,7 +80,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200 69853525 Ext. 3525",
         fax: "-",
-        email: "edfuel@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 10,
@@ -89,7 +89,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200 69853535 Ext. 3535",
         fax: "-",
-        email: "edom1@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 11,
@@ -98,7 +98,7 @@ export default function OfficialsTable() {
         address: "Nagpur, Katol Road",
         phone: "0712-2592759",
         fax: "-",
-        email: "edom2@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 12,
@@ -107,7 +107,7 @@ export default function OfficialsTable() {
         address: "Estrella Batteries, Expansion Compound Dharavi",
         phone: "022-69425050 Ext. 5050",
         fax: "-",
-        email: "edit@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 13,
@@ -116,7 +116,7 @@ export default function OfficialsTable() {
         address: "HDIL Towers, Bandra (E)",
         phone: "022-69852200 69835318 Ext. 3518",
         fax: "-",
-        email: "edens@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 14,
@@ -125,7 +125,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200 69853535 Ext. 3519",
         fax: "-",
-        email: "cegw@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 15,
@@ -134,7 +134,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200 69853535 Ext. 3515",
         fax: "-",
-        email: "cgmsstores@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 16,
@@ -143,7 +143,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200 69853535 Ext. 3514",
         fax: "-",
-        email: "cgmcivil3@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 17,
@@ -152,7 +152,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 3527",
         fax: "-",
-        email: "rcgen@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 18,
@@ -161,7 +161,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 3524",
         fax: "-",
-        email: "cefmc@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 19,
@@ -170,7 +170,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 3520",
         fax: "-",
-        email: "cgmgpp@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 20,
@@ -179,7 +179,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 3526",
         fax: "-",
-        email: "cgmpmg@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 21,
@@ -188,7 +188,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535",
         fax: "-",
-        email: "cecoal@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 22,
@@ -197,7 +197,7 @@ export default function OfficialsTable() {
         address: "HDIL Tower, Bandra (E) Mumbai-51",
         phone: "022-26582847",
         fax: "-",
-        email: "ceest@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 23,
@@ -206,7 +206,7 @@ export default function OfficialsTable() {
         address: "Estrella Batteries, Expansion Compound, Dharavi ROAD, MUMBAI 19",
         phone: "022-69425000 Ext. 5090",
         fax: "-",
-        email: "cgmtechnical@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 24,
@@ -215,7 +215,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 3515",
         fax: "-",
-        email: "cpc@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 25,
@@ -224,7 +224,7 @@ export default function OfficialsTable() {
         address: "Estrella Batteries, Expansion Compound, FIRST FLOOR, PLOT NO. 1",
         phone: "022-6942500 Ext. 5005",
         fax: "-",
-        email: "cgmcivil1@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 26,
@@ -233,7 +233,7 @@ export default function OfficialsTable() {
         address: "Hongkong Bank Building, Fort Mumbai-01",
         phone: "022-22695336 Ext. 324",
         fax: "-",
-        email: "cehydro@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 27,
@@ -242,7 +242,7 @@ export default function OfficialsTable() {
         address: "HDIL Tower, Bandra (E) Mumbai-51",
         phone: "022-69415353 26582424",
         fax: "-",
-        email: "cespgd@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 28,
@@ -251,7 +251,7 @@ export default function OfficialsTable() {
         address: "HDIL Tower, Bandra (E) Mumbai-51",
         phone: "022-69415322/ Ext. 322",
         fax: "-",
-        email: "cgmssecurity@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 29,
@@ -260,7 +260,7 @@ export default function OfficialsTable() {
         address: "HDIL Tower, Bandra (E) Mumbai-51",
         phone: "022-69415354/ Ext. 354",
         fax: "-",
-        email: "ciro@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 30,
@@ -269,7 +269,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E) Mumbai-51",
         phone: "022-6952200 69853535 Ext. 3658",
         fax: "-",
-        email: "cgmaccounts@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 31,
@@ -278,7 +278,7 @@ export default function OfficialsTable() {
         address: "HDIL TOWERS, BANDRA (E)",
         phone: "022-69415301",
         fax: "-",
-        email: "ia@mahagenco.in",
+        email: "i@maha-genco.co.in",
       },
       {
         id: 32,
@@ -287,7 +287,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-6952200/69853535 Ext. 3513",
         fax: "-",
-        email: "cgmhr@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 33,
@@ -296,7 +296,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 3516",
         fax: "-",
-        email: "cgmfinance@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 34,
@@ -305,7 +305,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 3511",
         fax: "-",
-        email: "cs@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 35,
@@ -314,7 +314,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 3657",
         fax: "-",
-        email: "cla@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 36,
@@ -323,7 +323,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 3512",
         fax: "-",
-        email: "pro@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 37,
@@ -332,7 +332,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 354",
         fax: "-",
-        email: "facfo@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 38,
@@ -341,7 +341,7 @@ export default function OfficialsTable() {
         address: "Prakashgad, Bandra (E), Mumbai-51",
         phone: "022-69852200/69853535 Ext. 2358",
         fax: "-",
-        email: "cgm@mrel.in",
+        email: "@maha-genco.co.in",
       },
       {
         id: 39,
@@ -350,7 +350,7 @@ export default function OfficialsTable() {
         address: "HDIL TOWERS, BANDRA (E)",
         phone: "022-69415301",
         fax: "-",
-        email: "ia@mahagenco.in",
+        email: "@maha-genco.co.in",
       },
     ];
   

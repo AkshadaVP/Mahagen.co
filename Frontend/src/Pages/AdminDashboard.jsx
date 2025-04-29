@@ -1,108 +1,135 @@
+// src/Pages/AdminDashboard.jsx
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { adminUsers } from '../config/adminEmails'; // ✅ Import admin role list
+import { adminUsers } from '../config/adminEmails';
 
-const AdminDashboard = () => {
+const API = import.meta.env.VITE_API_BASE_URL;
+
+const TABS = [
+  { key: 'accounts', label: 'Account Approval' },
+  { key: 'forms',    label: 'Form Approval'    },
+];
+
+// possible statuses for each tab
+const STATUS_OPTIONS = {
+  accounts: ['approved', 'rejected'],
+  forms:    ['underprocess', 'approved', 'rejected'],
+};
+
+export default function AdminDashboard() {
   const { user, isLoaded } = useUser();
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('accounts');
+  const [accounts,   setAccounts] = useState([]);
+  const [forms,      setForms]    = useState([]);
+  const [loading,    setLoading]  = useState(false);
+  const [error,      setError]    = useState('');
 
-  // ✅ Normalize and check role from shared config
-  const email = user?.primaryEmailAddress?.emailAddress?.trim().toLowerCase();
-  const isAdmin = adminUsers.some(
-    (admin) => admin.email.trim().toLowerCase() === email && admin.role === "admin"
+  const email = user?.primaryEmailAddress?.emailAddress.trim().toLowerCase();
+  const isAdmin = adminUsers.some(a =>
+    a.email.trim().toLowerCase() === email && a.role === 'admin'
   );
 
-  const fetchRequests = async () => {
-    try {
-      const res = await fetch(`https://mahagen-co.onrender.com/api/requests?status=pending`);
-      const data = await res.json();
-      setRequests(data);
-      setLoading(false);
-    } catch (err) {
-      setError('Failed to load requests.');
-      setLoading(false);
-    }
-  };
-
-  const updateStatus = async (id, status) => {
-    try {
-      const res = await fetch(`https://mahagen-co.onrender.com/api/requests/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || 'Server error');
-
-      fetchRequests(); // refresh
-    } catch (err) {
-      console.error('❌ Error while updating status:', err.message);
-      alert('Something went wrong. Please check the server or try again.');
-    }
-  };
-
   useEffect(() => {
-    if (isAdmin) fetchRequests();
-  }, [isAdmin]);
+    if (!isLoaded || !isAdmin) return;
+    fetchData();
+  }, [isLoaded, isAdmin, activeTab]);
 
-  if (!isLoaded) return <p className="mt-10 text-center">Checking authentication...</p>;
-
-  if (!isAdmin) {
-    return (
-      <div className="mt-10 font-semibold text-center text-red-600">
-        🚫 Access Denied: You are not authorized to view this page.
-      </div>
-    );
+  async function fetchData() {
+    setLoading(true);
+    setError('');
+    try {
+      if (activeTab === 'accounts') {
+        const res = await fetch(`${API}/api/requests?status=pending`);
+        setAccounts(await res.json());
+      } else {
+        const res = await fetch(`${API}/api/formdata`);
+        setForms(await res.json());
+      }
+    } catch {
+      setError('Failed to load data.');
+    } finally {
+      setLoading(false);
+    }
   }
 
-  if (loading) return <p className="mt-10 text-center">Loading...</p>;
+  async function updateStatus(id, status) {
+    const route = activeTab === 'accounts'
+      ? `${API}/api/requests/${id}`
+      : `${API}/api/formdata/${id}`;
+    try {
+      const res = await fetch(route, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error();
+      fetchData();
+    } catch {
+      alert('Error updating status');
+    }
+  }
+
+  if (!isLoaded) return <p className="mt-10 text-center">Checking authentication…</p>;
+  if (!isAdmin)  return <p className="mt-10 text-center text-red-600">Access Denied</p>;
+
+  const items = activeTab === 'accounts' ? accounts : forms;
+  const options = STATUS_OPTIONS[activeTab];
 
   return (
-    <div className="max-w-4xl p-6 mx-auto mt-10 bg-white rounded shadow">
-      <h1 className="mb-6 text-2xl font-bold">Admin Dashboard</h1>
+    <div className="max-w-5xl p-6 mx-auto my-10 bg-white rounded shadow">
+      <h1 className="mb-6 text-3xl font-bold">Admin Dashboard</h1>
+
+      <div className="flex mb-4 border-b">
+        {TABS.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-2 -mb-px font-medium ${
+              activeTab === tab.key
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
       {error && <p className="mb-4 text-red-500">{error}</p>}
+      {loading && <p className="text-center">Loading…</p>}
 
-      {requests.length === 0 ? (
-        <p>No pending requests found.</p>
-      ) : (
+      {!loading && (
         <table className="w-full text-sm border table-auto">
           <thead>
-            <tr className="bg-gray-200">
-              <th className="px-3 py-2 border">Name</th>
-              <th className="px-3 py-2 border">Email</th>
-              <th className="px-3 py-2 border">Status</th>
-              <th className="px-3 py-2 border">Actions</th>
+            <tr className="bg-gray-100">
+              <th className="p-2 border">Name</th>
+              <th className="p-2 border">Email / ID</th>
+              <th className="p-2 border">Current Status</th>
+              <th className="p-2 border">Set Status</th>
             </tr>
           </thead>
           <tbody>
-            {requests.map((req) => (
-              <tr key={req._id} className="text-center border-t">
-                <td className="px-3 py-2 border">{req.name}</td>
-                <td className="px-3 py-2 border">{req.email}</td>
-                <td className="px-3 py-2 capitalize border">{req.status}</td>
-                <td className="px-3 py-2 space-x-2 border">
-                  {req.status === 'pending' && (
-                    <>
-                      <button
-                        onClick={() => updateStatus(req._id, 'approved')}
-                        className="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => updateStatus(req._id, 'rejected')}
-                        className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600"
-                      >
-                        Reject
-                      </button>
-                    </>
-                  )}
+            {items.map(item => (
+              <tr key={item._id} className="text-center border-t">
+                <td className="p-2 border">
+                  {activeTab === 'accounts' ? item.name : item.candidateName}
+                </td>
+                <td className="p-2 border">{item.email}</td>
+                <td className="p-2 capitalize border">{item.status}</td>
+                <td className="p-2 border">
+                  <div className="flex justify-center space-x-4">
+                    {options.map(statusKey => (
+                      <label key={statusKey} className="flex items-center space-x-1">
+                        <input
+                          type="checkbox"
+                          checked={item.status === statusKey}
+                          onChange={() => updateStatus(item._id, statusKey)}
+                          className="w-4 h-4"
+                        />
+                        <span className="capitalize">{statusKey.replace('underprocess','under process')}</span>
+                      </label>
+                    ))}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -111,6 +138,4 @@ const AdminDashboard = () => {
       )}
     </div>
   );
-};
-
-export default AdminDashboard;
+}

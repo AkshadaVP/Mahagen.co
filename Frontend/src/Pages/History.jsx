@@ -27,7 +27,7 @@ export default function History() {
       phone: '',
       office: '0712 – 2591234',
       fax: '',
-      email: 'edom2@mahagenco.in',
+      email: '@maha-genco.co.in',
     },
     {
       name: 'Shri. Vivek Rokde',
@@ -36,7 +36,7 @@ export default function History() {
       phone: '07109 – 262126',
       office: '07109 – 262155 / 74 / 81',
       fax: '07109 – 262162',
-      email: 'edgp2koradi@mahagenco.in',
+      email: '@maha-genco.co.in',
     },
   ];
 
@@ -52,7 +52,7 @@ export default function History() {
             'KORADI TPS(660 MW),(210 MW) URJA BHAVAN, TAL KAMATHI, NAGPUR – 441111',
           office: '07109‑262141‑46\n262106/09\nExt:1001/6001',
           fax: '--',
-          email: 'cegenkoradi@mahagenco.in',
+          email: '@maha-genco.co.in',
         },
       ],
     },
@@ -65,7 +65,7 @@ export default function History() {
           address: 'KORADI COMPLEX, CHINDWARA ROAD, KORADI – 441111',
           office: '07109‑264862/69\nExt:1504',
           fax: '-',
-          email: 'cgmkrdproj@mahagenco.in',
+          email: '@maha-genco.co.in',
         },
         {
           name: 'Vivek Rokade',
@@ -73,7 +73,7 @@ export default function History() {
           address: 'KORADI COMPLEX, CHINDWARA ROAD, KORADI – 441111',
           office: '07109‑262238168 / 262128',
           fax: '-',
-          email: 'cegen217@rediffmail.com',
+          email: '@maha-genco.co.in',
         },
         {
           name: 'Sanjay Rahate',
@@ -81,7 +81,7 @@ export default function History() {
           address: 'KORADI COMPLEX, CHINDWARA ROAD, KORADI – 441111',
           office: '07109‑295701/295703 Extn. 201',
           fax: '-',
-          email: 'cegckoradi@mahagenco.in',
+          email: '@maha-genco.co.in',
         },
       ],
     },
@@ -96,7 +96,7 @@ export default function History() {
             'KORADI TRAINING CENTER KORADI TPS PREMISES NAGPUR – 441111',
           office: '07109‑263850/262737\nFax: 07109‑262167',
           fax: '',
-          email: 'cgmktc@mahagenco.in; ktc@mahagenco.in',
+          email: '@maha-genco.co.in',
         },
       ],
     },

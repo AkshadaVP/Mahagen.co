@@ -25,6 +25,7 @@ const Navbar = () => {
 
   // dropdown
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isEmployeeAreaOpen, setIsEmployeeAreaOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownTimeout = useRef(null);
 
@@ -36,6 +37,10 @@ const Navbar = () => {
   const toggleSidebar = () => setIsSidebarOpen(o => !o);
   const closeSidebar  = () => setIsSidebarOpen(false);
 
+  const toggleEmployeeArea = () => {
+    setIsEmployeeAreaOpen(prev => !prev); // Toggle the dropdown state
+  };
+
   // on scroll, toggle header bg
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 100);
@@ -45,7 +50,9 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     await signOut();
+    setIsEmployeeAreaOpen(false); // Close the dropdown after sign-out
   };
+  
 
   const openDropdown = label => {
     if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
@@ -93,88 +100,90 @@ const Navbar = () => {
     <div className="fixed top-0 left-0 right-0 z-50">
       {/* Top Blue Bar */}
       <div className="px-4 py-2 text-white bg-blue-800">
-        <div className="flex items-center justify-between">
-          <div className="flex gap-5 ml-8 text-xs">
-            <div className="flex items-center">
-              <Phone className="w-4 h-4 mr-1" />
-              <span>022-69425000</span>
-            </div>
-            <div className="flex items-center">
-              <Mail className="w-4 h-4 mr-1" />
-              <span>webposting@mahagenco.in</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 mr-8 text-sm">
-            <a href="#" className="hover:underline">SAP Dashboard</a>
-            <span>|</span>
-            <a href="#" className="hover:underline">Employee's Area</a>
-            <span>|</span>
-            <a href="#" className="hover:underline">Mail</a>
-            <span>|</span>
-            <Search className="w-4 h-4" />
-            <span>|</span>
-            <div className="flex items-center space-x-1">
-              <span className="text-xs">A-</span>
-              <span>A</span>
-              <span className="text-lg">A+</span>
-            </div>
-            <span>|</span>
-            <span>मराठी</span>
-            <span>|</span>
-            <Volume2 className="w-4 h-4" />
-            <span>|</span>
-            <span>screen-reader</span>
-
-            {/* Authenticated user dropdown */}
-            {user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center px-2 py-1 space-x-2 text-black bg-white rounded hover:bg-gray-100"
-                >
-                  {user.profileImageUrl ? (
-                    <img
-                      src={user.profileImageUrl}
-                      alt="profile"
-                      className="w-6 h-6 rounded-full"
-                    />
-                  ) : (
-                    <User className="w-4 h-4" />
-                  )}
-                  <span className="text-xs font-medium">
-                    {user.primaryEmailAddress?.emailAddress}
-                  </span>
-                </button>
-                {isDropdownOpen && (
-                  <div className="absolute right-0 z-50 w-40 mt-2 text-black bg-white rounded shadow-md">
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-100"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                {/* Request Access */}
-                <Link to="/user-signup">
-                  <button className="px-3 py-1 text-sm text-white bg-green-600 rounded-sm hover:bg-green-700">
-                    Request Access
-                  </button>
-                </Link>
-                {/* Login */}
-                <Link to="/sign-in">
-                  <button className="px-3 py-1 text-sm text-white bg-blue-600 rounded-sm hover:bg-blue-700">
-                    Login
-                  </button>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
+  <div className="flex items-center justify-between">
+    {/* Left side unchanged */}
+    <div className="flex gap-5 ml-8 text-xs">
+      <div className="flex items-center">
+        <Phone className="w-4 h-4 mr-1" />
+        <span>022-69425000</span>
       </div>
+      <div className="flex items-center">
+        <Mail className="w-4 h-4 mr-1" />
+        <span>webposting@mahagenco.in</span>
+      </div>
+    </div>
+
+    {/* Right side with Employee's Area dropdown */}
+    <div className="flex items-center gap-3 mr-8 text-sm">
+      <a href="#" className="hover:underline">SAP Dashboard</a>
+      <span>|</span>
+
+      {/* Employee's Area */}
+      {!user ? (
+    <div className="relative">
+      <button onClick={toggleEmployeeArea} className="hover:underline">
+        Employee's Area
+      </button>
+      {isEmployeeAreaOpen && (
+        <div className="absolute right-0 z-50 w-40 mt-2 text-black bg-white rounded shadow-md">
+          <Link to="/user-signup" className="block px-4 py-2 hover:bg-gray-100">
+            Request Access
+          </Link>
+          <Link to="/sign-in" className="block px-4 py-2 hover:bg-gray-100">
+            Login
+          </Link>
+        </div>
+      )}
+    </div>
+  ) : (
+    <div className="relative">
+      <button onClick={toggleEmployeeArea} className="hover:underline">
+        Employee's Area
+      </button>
+      {isEmployeeAreaOpen && (
+        <div className="absolute right-0 z-50 w-40 mt-2 text-black bg-white rounded shadow-md">
+          <button onClick={handleSignOut} className="w-full px-4 py-2 text-left hover:bg-gray-100">
+            Sign Out
+          </button>
+        </div>
+      )}
+    </div>
+  )}
+
+  {/* Profile Circle */}
+  {user && (
+    <Link to="/profile">
+      <div className="flex items-center justify-center w-8 h-8 text-white bg-blue-600 rounded-full hover:opacity-80">
+      {(
+        user?.firstName?.[0] ||
+        user?.primaryEmailAddress?.emailAddress?.[0] ||
+        'U'
+        ).toUpperCase()}
+        </div>
+    </Link>
+  )}
+
+      <span>|</span>
+      <a href="#" className="hover:underline">Mail</a>
+      <span>|</span>
+      <Search className="w-4 h-4" />
+      <span>|</span>
+      <div className="flex items-center space-x-1">
+        <span className="text-xs">A-</span>
+        <span>A</span>
+        <span className="text-lg">A+</span>
+      </div>
+      <span>|</span>
+      <span>मराठी</span>
+      <span>|</span>
+      <Volume2 className="w-4 h-4" />
+      <span>|</span>
+      <span>screen-reader</span>
+    </div>
+  </div>
+</div>
+
+
 
       {/* Logo Bar */}
       <div
@@ -364,7 +373,7 @@ const Navbar = () => {
           <p className="text-lg">022-69425000</p>
           <p>Maharashtra State Power Generation Co. Ltd.</p>
           <p>PRAKASHGAD, Plot No. G-9, Bandra (East)</p>
-          <p>Mumbai-400 051.</p>
+          <p>Mumbai-400 051.</p>
         </footer>
       </aside>
     </div>

@@ -1,4 +1,8 @@
+// src/Pages/UserSignUp.jsx
 import React, { useState } from 'react';
+
+// Make sure VITE_API_BASE_URL is defined in your .env (e.g. VITE_API_BASE_URL=http://localhost:5000)
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const UserSignUp = () => {
   const [formData, setFormData] = useState({ name: '', email: '' });
@@ -17,7 +21,7 @@ const UserSignUp = () => {
     setError('');
 
     try {
-      const res = await fetch(`https://mahagen-co.onrender.com/api/requests`, {
+      const res = await fetch(`${API_BASE}/api/requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -31,6 +35,7 @@ const UserSignUp = () => {
         setError(data.error || 'Something went wrong');
       }
     } catch (err) {
+      console.error('Network error:', err);
       setError('⚠️ Server not responding. Please try again later.');
     }
   };

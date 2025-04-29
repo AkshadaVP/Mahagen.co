@@ -16,6 +16,9 @@ import InstalledCapacity from './Pages/InstalledCapacity';
 import BoardMembers from './Pages/BoardMembers';
 import SolarProjects from './Pages/SolarProjects';
 import GpIiCoalMine from './Pages/GpIiCoalMine';
+import ApplyFormPage from './Pages/ApplyFormPage';
+import Profile from './Pages/Profile';
+import ViewApplication from './Pages/ViewApplication';
 
 // Auth pages
 import UserSignUp from './Pages/UserSignUp';
@@ -45,7 +48,13 @@ export default function App() {
         <Route path="/installed-capacity" element={<InstalledCapacity />} />
         <Route path="/board-members"      element={<BoardMembers />} />
         <Route path="/solar"              element={<SolarProjects />} />
-        <Route path="/gp-ii"     element={<GpIiCoalMine />} />
+        <Route path="/gp-ii"              element={<GpIiCoalMine />} />
+        <Route path="/profile"            element={<Profile/>}/>
+        <Route path="/apply-form"         element={<ApplyFormPage/>}/>
+        <Route path="/view-application" element={<ViewApplication />} />
+
+
+        
 
 
         <Route path="/redirect-after-login" element={<RedirectAfterLogin />} />

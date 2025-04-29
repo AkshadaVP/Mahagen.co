@@ -1,102 +1,88 @@
-// routes/requestRoutes.js
-const express = require('express');
-const router = express.Router();
-const Request = require('../models/request');
-require('dotenv').config();
+const express    = require('express')
+const router     = express.Router()
+const Request    = require('../models/request')
+const FormData   = require('../models/FormData')
+const { clerkClient } = require('@clerk/clerk-sdk-node')
 
-const { clerkClient } = require('@clerk/clerk-sdk-node');
-// If Node <18, uncomment for fetch polyfill:
-// const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
+// POST /api/requests  
+//  • if req.body.applicationFor exists → treat as application‐form  
+//  • otherwise → treat as login‐access request
 router.post('/', async (req, res) => {
-  const { name, email } = req.body;
-  try {
-    const newRequest = new Request({ name, email });
-    await newRequest.save();
-    res.status(201).json({ message: 'Request submitted' });
-  } catch (err) {
-    console.error('❌ Error while saving request:', err.message);
-    res.status(400).json({ error: 'Email already used or something went wrong.' });
+  if (req.body.applicationFor) {
+    try {
+      const sub = new FormData(req.body)
+      await sub.save()
+      return res.status(201).json({ message: 'Application submitted' })
+    } catch (err) {
+      console.error('Error saving application:', err.message)
+      return res.status(400).json({ error: err.message })
+    }
   }
-});
 
+  const { name, email } = req.body
+  try {
+    const r = new Request({ name, email })
+    await r.save()
+    res.status(201).json({ message: 'Access request submitted' })
+  } catch (err) {
+    console.error('Error saving access request:', err.message)
+    res.status(400).json({ error: 'Email already used or something went wrong.' })
+  }
+})
+
+// GET /api/requests?status=…  
 router.get('/', async (req, res) => {
-  const { status } = req.query;
-  const filter = status ? { status } : {};
+  const filter = req.query.status ? { status: req.query.status } : {}
   try {
-    const requests = await Request.find(filter);
-    res.json(requests);
+    const list = await Request.find(filter)
+    res.json(list)
   } catch (err) {
-    console.error('❌ Error while fetching requests:', err.message);
-    res.status(500).json({ error: 'Failed to fetch requests' });
+    console.error('Error fetching requests:', err.message)
+    res.status(500).json({ error: 'Failed to fetch requests' })
   }
-});
+})
 
+// PUT /api/requests/:id  
 router.put('/:id', async (req, res) => {
-  const { status } = req.body;
-
   try {
-    const request = await Request.findById(req.params.id);
-    if (!request) return res.status(404).json({ error: 'Request not found' });
+    const reqDoc = await Request.findById(req.params.id)
+    if (!reqDoc) return res.status(404).json({ error: 'Request not found' })
 
-    request.status = status;
-    await request.save();
-    console.log(`🔄 Request ${request.email} updated to ${status}`);
+    reqDoc.status = req.body.status
+    await reqDoc.save()
 
-    if (status === 'approved') {
-      const tempPassword = Math.random().toString(36).slice(-8);
-      console.log(`🔑 Temp password for ${request.email}: ${tempPassword}`);
-
-      // Clerk user creation
-      let createdUser;
-      const existingUsers = await clerkClient.users.getUserList({ emailAddress: request.email });
-      if (existingUsers.length > 0) {
-        console.log('⚠️ User already exists in Clerk:', existingUsers[0].id);
-        createdUser = existingUsers[0];
-      } else {
-        createdUser = await clerkClient.users.createUser({
-          emailAddress: [request.email],
-          password: tempPassword,
-          publicMetadata: { role: 'user' },
-        });
-        console.log('✅ Clerk user created:', createdUser.id);
+    if (reqDoc.status === 'approved') {
+      const tempPassword = Math.random().toString(36).slice(-8)
+      let user = (await clerkClient.users.getUserList({ emailAddress: reqDoc.email }))[0]
+      if (!user) {
+        user = await clerkClient.users.createUser({
+          emailAddress: [reqDoc.email],
+          password:      tempPassword,
+          publicMetadata:{ role: 'user' }
+        })
       }
-
-      // email content
-      const emailContent = `
-        <h1>🎉 You're approved!</h1>
-        <p>Use these credentials to log in to Mahajan.co:</p>
-        <p><strong>Email:</strong> ${request.email}</p>
-        <p><strong>Temporary Password:</strong> ${tempPassword}</p>
-        <p><a href="http://localhost:5173/sign-in">Login here</a></p>
-        <p>✅ Please change your password after logging in.</p>
-      `;
-
-      // call your hard-coded email API
-      const emailApiResponse = await fetch(
-        'https://confirmation-api.onrender.com/send-email',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: request.email,
-            subject: 'Your Mahajan.co Login Access',
-            htmlContent: emailContent,
-          }),
-        }
-      );
-
-      if (!emailApiResponse.ok) {
-        throw new Error(`Email API responded with status: ${emailApiResponse.status}`);
-      }
-      console.log(`📩 Email sent to ${request.email} via API`);
+      const emailHtml = `
+        <h1>🎉 You’re Approved!</h1>
+        <p>Email: ${reqDoc.email}</p>
+        <p>Password: ${tempPassword}</p>
+        <p><a href="http://localhost:5173/sign-in">Log in here</a></p>
+      `
+      await fetch('https://confirmation-api.onrender.com/send-email', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: reqDoc.email,
+          subject: 'Your Login Details',
+          htmlContent: emailHtml
+        })
+      })
     }
 
-    res.json({ message: `Request ${status}` });
+    res.json({ message: `Request ${reqDoc.status}` })
   } catch (err) {
-    console.error('❌ Error in PUT /:id:', err.message);
-    res.status(500).json({ error: 'Failed to update status or send email' });
+    console.error('Error in PUT /:id:', err.message)
+    res.status(500).json({ error: 'Failed to update request' })
   }
-});
+})
 
-module.exports = router;
+module.exports = router
