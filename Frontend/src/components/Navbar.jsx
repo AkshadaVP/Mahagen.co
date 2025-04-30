@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Phone, Mail, Search, Volume2, User } from 'react-feather';
 import { Link } from 'react-router-dom';
 import { useUser, useClerk } from '@clerk/clerk-react';
+import { adminUsers } from '../config/adminEmails'
+
 
 // Images
 import logo from '../assets/demo-hosting-logo-white.png';
@@ -151,17 +153,24 @@ const Navbar = () => {
   )}
 
   {/* Profile Circle */}
-  {user && (
-    <Link to="/profile">
+  {user && (() => {
+  const email = user.primaryEmailAddress.emailAddress.trim().toLowerCase()
+  const isAdmin = adminUsers.some(a => a.email.trim().toLowerCase() === email)
+  const target = isAdmin ? '/admin-dashboard' : '/profile'
+
+  return (
+    <Link to={target}>
       <div className="flex items-center justify-center w-8 h-8 text-white bg-blue-600 rounded-full hover:opacity-80">
-      {(
-        user?.firstName?.[0] ||
-        user?.primaryEmailAddress?.emailAddress?.[0] ||
-        'U'
+        {(
+          user.firstName?.[0] ||
+          user.primaryEmailAddress.emailAddress?.[0] ||
+          'U'
         ).toUpperCase()}
-        </div>
+      </div>
     </Link>
-  )}
+  )
+})()}
+
 
       <span>|</span>
       <a href="#" className="hover:underline">Mail</a>

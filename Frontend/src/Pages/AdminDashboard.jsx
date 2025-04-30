@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { adminUsers } from '../config/adminEmails';
+import Navbar from '../components/Navbar';
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
@@ -76,7 +77,9 @@ export default function AdminDashboard() {
   const options = STATUS_OPTIONS[activeTab];
 
   return (
-    <div className="max-w-5xl p-6 mx-auto my-10 bg-white rounded shadow">
+    <>
+    <Navbar/>
+    <div className="max-w-5xl p-6 mx-auto my-10 mt-40 bg-white rounded shadow">
       <h1 className="mb-6 text-3xl font-bold">Admin Dashboard</h1>
 
       <div className="flex mb-4 border-b">
@@ -137,5 +140,6 @@ export default function AdminDashboard() {
         </table>
       )}
     </div>
+    </>
   );
 }
