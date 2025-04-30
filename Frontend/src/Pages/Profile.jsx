@@ -94,7 +94,7 @@ export default function Profile() {
 
           {!applicationData ? (
             <Link
-              to="/applyform"
+              to="/apply-form"
               className="px-6 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
             >
               Apply Now
