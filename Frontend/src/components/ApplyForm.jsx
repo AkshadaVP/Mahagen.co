@@ -16,154 +16,211 @@ const radioClass = "h-5 w-5 text-blue-600 mr-1"
 const ApplyForm = () => {
   const { user } = useUser()
   const navigate = useNavigate()
+
+  // 1️⃣ initialize your form state
   const [form, setForm] = useState({
-    passportPhoto: null,
-    thumb: null,
-    signature: null,
-    documents: [],
-    qualifications: [{ academic: '', qualification: '', board: '', year: '' }],
-    declaration: false,
+    passportPhoto:     null,
+    thumb:             null,
+    signature:         null,
+    documents:         [],
+    qualifications:    [{ academic: '', qualification: '', board: '', year: '' }],
+    declaration:       false,
+    phCh:               'No',       // Physically Handicapped?
+    disabilityExplain: '',
+    // you can also pre-declare other text fields here if you like
   })
-  const [qualificationRows, setQualificationRows] = useState([
-    { academic: '', qualification: '', board: '', year: '' }
-  ])
+
+  // 2️⃣ separate state for easy row-editing
+  const [qualificationRows, setQualificationRows] = useState(form.qualifications)
+
+  // 3️⃣ errors + doc count error
+  const [errors,   setErrors]   = useState({})
   const [docError, setDocError] = useState('')
 
-  // Refs for hidden file inputs
+  // 4️⃣ file input refs
   const photoRef = useRef()
   const thumbRef = useRef()
-  const signRef = useRef()
-  const docsRef = useRef()
+  const signRef  = useRef()
+  const docsRef  = useRef()
 
+  // 5️⃣ validation logic
+  const validate = () => {
+    const errs = {}
+
+    if (!form.passportPhoto)    errs.passportPhoto     = 'Required'
+    if (!form.thumb)            errs.thumb             = 'Required'
+    if (!form.signature)        errs.signature         = 'Required'
+    if (form.documents.length < 1) errs.documents       = 'Upload at least one file'
+    if (!form.applicationFor)   errs.applicationFor   = 'Required'
+    if (!form.postName)         errs.postName         = 'Required'
+    if (!form.division)         errs.division         = 'Required'
+    if (!form.candidateName)    errs.candidateName    = 'Required'
+    if (!form.fatherName)       errs.fatherName       = 'Required'
+
+    const anyQualification = qualificationRows.some(r =>
+      r.academic && r.qualification && r.board && r.year
+    )
+    if (!anyQualification)
+      errs.qualifications = 'Fill at least one qualification row'
+
+    if (form.phCh === 'Yes' && !form.disabilityExplain) {
+      errs.disabilityExplain = 'Please explain your disability'
+    }
+
+    setErrors(errs)
+    return Object.keys(errs).length === 0
+  }
+
+  // 6️⃣ overall “is ready to enable submit?” check
+  const isFormValid = () =>
+    Object.keys(errors).length === 0 &&
+    form.passportPhoto &&
+    form.thumb &&
+    form.signature &&
+    form.documents.length > 0 &&
+    qualificationRows.some(r => r.academic && r.qualification && r.board && r.year) &&
+    form.applicationFor &&
+    form.postName &&
+    form.division &&
+    form.candidateName &&
+    form.fatherName &&
+    (form.phCh !== 'Yes' || form.disabilityExplain) &&
+    form.declaration
+
+  // 7️⃣ generic change handler
   const onChange = e => {
     const { name, type, checked, files, value } = e.target
     if (type === 'file') {
       if (name === 'documents') {
         const arr = Array.from(files)
         if (arr.length < 1 || arr.length > 3) {
-          setDocError('Please upload between 1 and 3 documents.')
+          setDocError('Select between 1 and 3 documents')
           return
         } else {
           setDocError('')
         }
-        setForm(prev => ({ ...prev, documents: arr }))
+        setForm(f => ({ ...f, documents: arr }))
       } else {
-        setForm(prev => ({ ...prev, [name]: files[0] }))
+        setForm(f => ({ ...f, [name]: files[0] }))
       }
     } else if (type === 'checkbox') {
-      setForm(prev => ({ ...prev, [name]: checked }))
+      setForm(f => ({ ...f, [name]: checked }))
     } else {
-      setForm(prev => ({ ...prev, [name]: value }))
+      setForm(f => ({ ...f, [name]: value }))
     }
   }
 
-  const handleRemove = field => {
-    setForm(prev => {
-      const updated = { ...prev }
-      updated[field] = field === 'documents' ? [] : null
-      return updated
-    })
+  // 8️⃣ remove a file from your form state
+  const removeFile = field => {
+    setForm(f => ({ ...f, [field]: field === 'documents' ? [] : null }))
     if (field === 'passportPhoto') photoRef.current.value = ''
-    if (field === 'thumb') thumbRef.current.value = ''
-    if (field === 'signature') signRef.current.value = ''
-    if (field === 'documents') docsRef.current.value = ''
+    if (field === 'thumb')         thumbRef.current.value = ''
+    if (field === 'signature')     signRef.current.value  = ''
+    if (field === 'documents')     docsRef.current.value  = ''
     setDocError('')
   }
 
-  const onQualificationChange = (idx, field, value) => {
-    const rows = [...qualificationRows]
-    rows[idx][field] = value
-    setQualificationRows(rows)
-    setForm(prev => ({ ...prev, qualifications: rows }))
+  // 9️⃣ per-row editing of qualifications
+  function onQualificationChange(idx, key, val) {
+    const next = qualificationRows.map((r,i) =>
+      i === idx ? { ...r, [key]: val } : r
+    )
+    setQualificationRows(next)
+    setForm(f => ({ ...f, qualifications: next }))
   }
 
-  const addRow = () => {
+  // 🔟 add a new empty row
+  function addRow() {
     const newRow = { academic: '', qualification: '', board: '', year: '' }
-    setQualificationRows(r => [...r, newRow])
-    setForm(prev => ({
-      ...prev,
-      qualifications: [...prev.qualifications, newRow]
-    }))
+    const next   = [...qualificationRows, newRow]
+    setQualificationRows(next)
+    setForm(f => ({ ...f, qualifications: next }))
   }
+
+  // ⓫ submit handler
   const onSubmit = async e => {
     e.preventDefault()
+    if (!validate()) return
+
     try {
-      // 1) upload all the images
+      // upload files
       const passportPhotoUrl = form.passportPhoto
         ? await uploadFile(form.passportPhoto)
         : ''
-      const thumbUrl = form.thumb ? await uploadFile(form.thumb) : ''
+      const thumbUrl = form.thumb
+        ? await uploadFile(form.thumb)
+        : ''
       const signatureUrl = form.signature
         ? await uploadFile(form.signature)
         : ''
       const documentUrls = await Promise.all(
         form.documents.map(f => uploadFile(f))
       )
-  
-      // 2) build your JSON payload
-      const dateOfBirth =
-        form.dobDay && form.dobMonth && form.dobYear
-          ? new Date(`${form.dobYear}-${form.dobMonth}-${form.dobDay}`)
-          : null
+
+      // build JSON
+      const dateOfBirth = form.dobYear && form.dobMonth && form.dobDay
+        ? new Date(`${form.dobYear}-${form.dobMonth}-${form.dobDay}`)
+        : null
+
       const age = {
-        years: parseInt(form.ageYears) || 0,
+        years:  parseInt(form.ageYears)  || 0,
         months: parseInt(form.ageMonths) || 0,
-        days: parseInt(form.ageDays) || 0,
+        days:   parseInt(form.ageDays)   || 0,
       }
+
       const address = {
-        name: form.addrName || '',
-        postOffice: form.po || '',
-        city: form.city || '',
-        district: form.dist || '',
-        state: form.state || '',
-        pin: form.pin || '',
+        name:       form.addrName || '',
+        postOffice: form.po       || '',
+        city:       form.city     || '',
+        district:   form.dist     || '',
+        state:      form.state    || '',
+        pin:        form.pin      || '',
       }
-  
+
       const payload = {
-        // ** add the user’s email so your profile can find it **
         email: user.primaryEmailAddress.emailAddress,
-        applicationFor: form.applicationFor,
-        postName: form.postName,
-        division: form.division,
-        candidateName: form.candidateName,
-        fatherName: form.fatherName,
-        community: form.community,
-        gender: form.gender,
-        religion: form.religion,
+
+        applicationFor:        form.applicationFor,
+        postName:              form.postName,
+        division:              form.division,
+        candidateName:         form.candidateName,
+        fatherName:            form.fatherName,
+        community:             form.community,
+        gender:                form.gender,
+        religion:              form.religion,
         dateOfBirth,
         age,
-        isGovtEmployee: form.govtEmp === 'Yes',
-        isExServiceman: form.exServ === 'Yes',
-        isPhysicallyHandicapped: form.phCh === 'Yes',
-        visibleMark: form.visibleMark,
-        qualifications: qualificationRows,
+        isGovtEmployee:        form.govtEmp === 'Yes',
+        isExServiceman:        form.exServ   === 'Yes',
+        isPhysicallyHandicapped: form.phCh   === 'Yes',
+        visibleMark:           form.visibleMark,
+        qualifications:        qualificationRows,
         address,
-        nearestStation: form.station,
+        nearestStation:        form.station,
         passportPhotoUrl,
         thumbUrl,
         signatureUrl,
         documentUrls,
-        declaration: form.declaration,
+        declaration:           form.declaration,
       }
-  
-      // 3) POST to your backend
+
+      // POST
       const res = await fetch(
         `${API_BASE_URL}/api/formdata`,
         {
-          method: 'POST',
+          method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body:    JSON.stringify(payload),
         }
-      );
-      
-      if (!res.ok) throw new Error(`Status ${res.status}`);
-      alert('Application submitted successfully!');
+      )
+      if (!res.ok) throw new Error(`Status ${res.status}`)
+      alert('Application submitted successfully!')
       navigate('/profile')
     } catch (err) {
-      console.error(err);
-      alert('Submission failed: ' + err.message);
+      console.error(err)
+      alert('Submission failed: ' + err.message)
     }
-  };
+  }
   
 
 
@@ -449,7 +506,7 @@ const ApplyForm = () => {
             type="file"
             name="documents"
             multiple
-            accept="image/*"
+            accept="image/*,application/pdf"
             ref={docsRef}
             onChange={onChange}
             className="hidden"
@@ -464,9 +521,14 @@ const ApplyForm = () => {
           </label>
         </div>
         <div className="text-center md:col-span-2">
-          <button type="submit" className="px-6 py-2 mt-4 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
-            Submit
-          </button>
+        <button
+          type="submit"
+          disabled={!isFormValid()}
+          className="px-6 py-2 mt-4 text-sm text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50"
+        >
+          Submit
+        </button>
+
         </div>
       </div>
     </form>

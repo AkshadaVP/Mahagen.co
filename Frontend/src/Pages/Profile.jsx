@@ -24,8 +24,6 @@ export default function Profile() {
         const json = await res.json()
         if (res.ok) {
           setApplicationData(json)
-        } else {
-          console.error('Fetch error:', json.error)
         }
       } catch (err) {
         console.error('Error fetching application data', err)
@@ -46,14 +44,13 @@ export default function Profile() {
     )
   }
 
-  // derive initial
   const initial = (
     user.firstName?.[0] ||
     user.primaryEmailAddress.emailAddress?.[0] ||
     'U'
   ).toUpperCase()
 
-  // helper for status label
+  // map statuses to nice labels
   const statusLabel = {
     pending:      'Pending',
     underprocess: 'Under Process',
@@ -61,19 +58,29 @@ export default function Profile() {
     rejected:     'Rejected',
   }[applicationData?.status] || 'Pending'
 
-  // avatar: if approved and we have a passportPhotoUrl, show it
   const showPhoto =
     applicationData?.status === 'approved' &&
     applicationData.passportPhotoUrl
+
+  // user's email used both for fetch and for constructing the view-URL
+  const email = user.primaryEmailAddress.emailAddress
 
   return (
     <>
       <Navbar />
 
       <div className="max-w-3xl p-10 mx-auto my-12 mt-40 bg-gray-100 rounded-2xl">
-        <h1 className="mb-8 text-2xl font-bold text-left">My Profile</h1>
+        <Link
+          to="/"
+          className="inline-block px-4 py-2 mb-4 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          ← Back to Home
+        </Link>
+
+        <h1 className="mb-8 text-2xl font-bold">My Profile</h1>
 
         <div className="flex flex-col items-center space-y-4">
+          {/* Avatar */}
           <div className="w-24 h-24 overflow-hidden bg-blue-600 rounded-full">
             {showPhoto ? (
               <img
@@ -88,10 +95,10 @@ export default function Profile() {
             )}
           </div>
 
-          <p className="text-lg font-medium">
-            {user.primaryEmailAddress.emailAddress}
-          </p>
+          {/* Email */}
+          <p className="text-lg font-medium">{email}</p>
 
+          {/* If no application at all */}
           {!applicationData ? (
             <Link
               to="/apply-form"
@@ -100,29 +107,39 @@ export default function Profile() {
               Apply Now
             </Link>
           ) : (
-            <div className="w-full space-y-6">
-              {/* summary box */}
-              <div className="p-4 bg-white rounded shadow">
-                <p><strong>Applied For:</strong> {applicationData.applicationFor}</p>
-                <p>
-                  <strong>Status:</strong>{' '}
-                  <span
-                    className={`px-2 py-1 rounded ${
-                      applicationData.status === 'approved'
-                        ? 'bg-green-500 text-white'
-                        : applicationData.status === 'rejected'
-                        ? 'bg-red-500 text-white'
-                        : 'bg-yellow-400 text-black'
-                    }`}
-                  >
-                    {statusLabel}
-                  </span>
-                </p>
+            <>
+              {/* Summary box */}
+              <div className="w-full space-y-6">
+                <div className="p-4 bg-white rounded shadow">
+                  <p><strong>Applied For:</strong> {applicationData.applicationFor}</p>
+                  <p>
+                    <strong>Status:</strong>{' '}
+                    <span
+                      className={`px-2 py-1 rounded ${
+                        applicationData.status === 'approved'
+                          ? 'bg-green-500 text-white'
+                          : applicationData.status === 'rejected'
+                          ? 'bg-red-500 text-white'
+                          : 'bg-yellow-400 text-black'
+                      }`}
+                    >
+                      {statusLabel}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Always show “View Full Application” once they've applied */}
+                <Link
+                  to={`/view-application/${encodeURIComponent(email)}`}
+                  className="inline-block px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50"
+                >
+                  View Full Application
+                </Link>
               </div>
 
-              {/* full form details, only if approved */}
+              {/* And if they’re approved, reveal the full details inline too */}
               {applicationData.status === 'approved' && (
-                <div className="p-4 space-y-2 text-sm bg-white rounded shadow">
+                <div className="p-4 mt-6 space-y-2 text-sm bg-white rounded shadow">
                   <h2 className="text-lg font-semibold">Application Details</h2>
                   <p><strong>Post Name:</strong> {applicationData.postName}</p>
                   <p><strong>Division:</strong> {applicationData.division}</p>
@@ -139,12 +156,14 @@ export default function Profile() {
                     <strong>Age:</strong>{' '}
                     {applicationData.age.years}y {applicationData.age.months}m {applicationData.age.days}d
                   </p>
-                  <p><strong>Address:</strong> {applicationData.address.name}, {applicationData.address.city}, {applicationData.address.state} – {applicationData.address.pin}</p>
+                  <p>
+                    <strong>Address:</strong>{' '}
+                    {applicationData.address.name}, {applicationData.address.city}, {applicationData.address.state} – {applicationData.address.pin}
+                  </p>
                   <p><strong>Nearest Station:</strong> {applicationData.nearestStation}</p>
-                  {/* signature/thumb/document URLs could be rendered here as links or images */}
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </div>

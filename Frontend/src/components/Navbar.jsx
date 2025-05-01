@@ -232,7 +232,7 @@ const Navbar = () => {
           ['Board of Directors of MSPGCL', '/board-of-directors'],
           ['Board Members of MSEB Holding', '/board-mseb'],
           ['Key Officials of MSPGCL', '/history'],
-          ['Organization Structure', '/organization-structure'],
+          ['Organization Structure', ''],
         ])}
         {renderDropdown('Generation', [
           ['Installed Capacity', '/installed-capacity'],
@@ -241,42 +241,42 @@ const Navbar = () => {
         {renderDropdown('Projects', [
           ['Thermal Projects', '/thermal-projects'],
           ['Solar Projects', '/solar'],
-          ['GP-II Coal Mine', '/gp-ii'],
+          ['GP-II Coal Mine', ''],
         ])}
         {renderDropdown('Subsidiaries', [
-          ['Mahagenco Renewable Energy Ltd', '/subsidiaries/mahagenco-renewable'],
-          ['Mahagenco NTPC Green Energy Ltd', '/subsidiaries/mahagenco-ntpc-green'],
-          ['Mahaguj Collieries Ltd', '/subsidiaries/mahaguj-collieries'],
-          ['Dhopave', '/subsidiaries/dhopave'],
-          ['UCM Coal Company Ltd', '/subsidiaries/ucm-coal'],
+          ['Mahagenco Renewable Energy Ltd', ''],
+          ['Mahagenco NTPC Green Energy Ltd', ''],
+          ['Mahaguj Collieries Ltd', ''],
+          ['Dhopave', ''],
+          ['UCM Coal Company Ltd', ''],
         ])}
         {renderDropdown('Auction', [
-          ['Auction', '/auction'],
-          ['List of e-Auction', '/list-of-eauction'],
+          ['Auction', ''],
+          ['List of e-Auction', ''],
         ])}
-        {renderNavLink('Financial Performance', '/financial-performance')}
-        {renderNavLink('E-procurement Portal', '/e-procurement')}
+        {renderNavLink('Financial Performance', '')}
+        {renderNavLink('E-procurement Portal', '')}
         {renderDropdown('Regulatory & Commercial', [
-          ['Regulatory & Commercial', '/regulatory'],
-          ['Rules & Regulations', '/rules-regulations'],
-          ['Regulatory Petitions', '/regulatory-petitions'],
-          ['Approved Tariff', '/approved-tariff'],
-          ['Approved PPA', '/approved-ppa'],
-          ['Monthly Fuel Cost and CV Data', '/monthly-fuel'],
-          ['Fuel Utilisation Plan', '/fuel-utilisation'],
+          ['Regulatory & Commercial', ''],
+          ['Rules & Regulations', ''],
+          ['Regulatory Petitions', ''],
+          ['Approved Tariff', ''],
+          ['Approved PPA', ''],
+          ['Monthly Fuel Cost and CV Data', ''],
+          ['Fuel Utilisation Plan', ''],
         ])}
         {renderDropdown('Media', [
-          ['Photo Gallery', '/photo-gallery'],
-          ['Video Gallery', '/video-gallery'],
-          ['New Project CSR', '/new-project-csr'],
-          ['Awards/Recognition', '/awards-recognition'],
-          ['Press Release', '/press-release'],
-          ['Srujan Magazine', '/srujan-magazine'],
+          ['Photo Gallery', ''],
+          ['Video Gallery', ''],
+          ['New Project CSR', ''],
+          ['Awards/Recognition', ''],
+          ['Press Release', ''],
+          ['Srujan Magazine', ''],
         ])}
         {renderDropdown('Career', [
-          ['Advertisement', '/advertisement'],
-          ['Exam Process Related Notification', '/exam-process'],
-          ['Result-Select List/Wait List', '/result-select'],
+          ['Advertisement', ''],
+          ['Exam Process Related Notification', ''],
+          ['Result-Select List/Wait List', ''],
         ])}
 
         {/* Mobile sidebar toggle */}

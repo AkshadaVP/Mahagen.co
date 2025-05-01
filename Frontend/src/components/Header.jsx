@@ -20,6 +20,7 @@ import hydro from '../assets/hydro.png';
 import solar from '../assets/solar.png';
 import gas from '../assets/gas.png';
 import bgvideo from '../assets/bgvideo.mp4';
+import NoticeSection from './NoticeSection';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 50 },
@@ -184,8 +185,8 @@ const Header = () => {
       >
       <MapSection />
       </motion.div>
-
       <BannerSlider />
+      <NoticeSection/>
       <Footer />
     </>
   );

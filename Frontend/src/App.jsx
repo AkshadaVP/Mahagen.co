@@ -25,6 +25,7 @@ import UserSignUp from './Pages/UserSignUp';
 import UserSignIn from './Pages/UserSignIn';
 import UserDashboard from './Pages/UserDashboard';
 import RedirectAfterLogin from './Pages/RedirectAfterLogin';
+import ReadOnlyApplicationForm from './Pages/ReadOnlyApplicationForm';
 
 // Admin (protected)
 import AdminDashboard from './Pages/AdminDashboard';
@@ -52,9 +53,7 @@ export default function App() {
         <Route path="/profile"            element={<Profile/>}/>
         <Route path="/apply-form"         element={<ApplyFormPage/>}/>
         <Route path="/view-application" element={<ViewApplication />} />
-
-
-        
+        <Route path="/view-application/:email"  element={<ReadOnlyApplicationForm />}/>
 
 
         <Route path="/redirect-after-login" element={<RedirectAfterLogin />} />
