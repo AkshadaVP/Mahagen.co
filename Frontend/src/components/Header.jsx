@@ -61,18 +61,18 @@ const Header = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className="relative flex items-center justify-center mt-10 bg-white"
+        className="relative flex items-center justify-center p-4 bg-white ml-80"
         style={{ zIndex: 20 }}
       >
         <div className="grid grid-cols-6 gap-20 px-8 md:px-16">
-          {[emp, esm, announcement, rti, tender, mediclaim].map((src, i) => (
+          {[emp, announcement, rti, mediclaim].map((src, i) => (
             <div
               key={i}
               className="flex flex-col items-center justify-center shadow-2xl h-35 w-35 rounded-xl"
             >
               <img src={src} alt="" className="mb-2" />
               <p className="text-center">
-                {['Employee','ESM','Announcements','RTI','Tenders','Mediclaim'][i]}
+                {['Employee','Announcements','RTI','Mediclaim'][i]}
               </p>
             </div>
           ))}

@@ -24,15 +24,28 @@ import testing from '../assets/test-sidebar.png';
 const Navbar = () => {
   const { user } = useUser();
   const { signOut } = useClerk();
+// ── hover-dropdown state & helpers ────────────────────────────────────────
+const [activeDropdown, setActiveDropdown] = useState(null);
+const dropdownTimeout = useRef(null);
+
+const openDropdown = (label) => {
+  if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+  setActiveDropdown(label);
+};
+
+const closeDropdown = () => {
+  dropdownTimeout.current = setTimeout(() => {
+    setActiveDropdown(null);
+  }, 200);
+};
 
   // dropdown
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isEmployeeAreaOpen, setIsEmployeeAreaOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null);
-  const dropdownTimeout = useRef(null);
 
   // scroll state
   const [scrolled, setScrolled] = useState(false);
+// Employee’s Area dropdown
+  const [isEmployeeAreaOpen, setIsEmployeeAreaOpen] = useState(false)
+  const empRef = useRef(null)
 
   // mobile sidebar
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -42,6 +55,18 @@ const Navbar = () => {
   const toggleEmployeeArea = () => {
     setIsEmployeeAreaOpen(prev => !prev); // Toggle the dropdown state
   };
+
+
+    // close Employee’s Area if you click anywhere else
+  useEffect(() => {
+    const onClickOutside = e => {
+      if (empRef.current && !empRef.current.contains(e.target)) {
+        setIsEmployeeAreaOpen(false)
+      }
+    }
+    window.addEventListener('mousedown', onClickOutside)
+    return () => window.removeEventListener('mousedown', onClickOutside)
+  }, [])
 
   // on scroll, toggle header bg
   useEffect(() => {
@@ -56,13 +81,8 @@ const Navbar = () => {
   };
   
 
-  const openDropdown = label => {
-    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
-    setActiveDropdown(label);
-  };
-  const closeDropdown = () => {
-    dropdownTimeout.current = setTimeout(() => setActiveDropdown(null), 200);
-  };
+
+
 
   function renderNavLink(label, to) {
     return (
@@ -120,56 +140,53 @@ const Navbar = () => {
       <a href="#" className="hover:underline">SAP Dashboard</a>
       <span>|</span>
 
-      {/* Employee's Area */}
-      {!user ? (
-    <div className="relative">
-      <button onClick={toggleEmployeeArea} className="hover:underline">
-        Employee's Area
-      </button>
-      {isEmployeeAreaOpen && (
-        <div className="absolute right-0 z-50 w-40 mt-2 text-black bg-white rounded shadow-md">
-          <Link to="/user-signup" className="block px-4 py-2 hover:bg-gray-100">
-            Request Access
-          </Link>
-          <Link to="/sign-in" className="block px-4 py-2 hover:bg-gray-100">
-            Login
-          </Link>
-        </div>
-      )}
-    </div>
-  ) : (
-    <div className="relative">
-      <button onClick={toggleEmployeeArea} className="hover:underline">
-        Employee's Area
-      </button>
-      {isEmployeeAreaOpen && (
-        <div className="absolute right-0 z-50 w-40 mt-2 text-black bg-white rounded shadow-md">
-          <button onClick={handleSignOut} className="w-full px-4 py-2 text-left hover:bg-gray-100">
-            Sign Out
-          </button>
-        </div>
-      )}
-    </div>
-  )}
+{/* Employee's Area */}
+      <div ref={empRef} className="relative inline-block">
+        <button
+          onClick={toggleEmployeeArea}
+          className="px-2 py-1 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none"
+        >
+          Employee’s Area
+        </button>
 
-  {/* Profile Circle */}
-  {user && (() => {
-  const email = user.primaryEmailAddress.emailAddress.trim().toLowerCase()
-  const isAdmin = adminUsers.some(a => a.email.trim().toLowerCase() === email)
-  const target = isAdmin ? '/admin-dashboard' : '/profile'
+        {isEmployeeAreaOpen && (
+          <div className="absolute right-0 w-40 mt-2 text-black bg-white rounded shadow-lg ring-1 ring-black ring-opacity-5">
+            {!user ? (
+              <Link
+                to="/sign-in"
+                onClick={() => setIsEmployeeAreaOpen(false)}
+                className="block px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                Login / Register
+              </Link>
+            ) : (
+              <button
+                onClick={() => { handleSignOut(); }}
+                className="w-full px-4 py-2 text-sm text-left hover:bg-gray-100"
+              >
+                Sign Out
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
+
+
+{/* Profile Circle */}
+{user && (() => {
+  const email   = user.primaryEmailAddress.emailAddress.trim().toLowerCase();
+  const isAdmin = adminUsers.some(a => a.email.trim().toLowerCase() === email);
+  const target  = isAdmin ? '/admin-dashboard' : '/profile';
   return (
-    <Link to={target}>
-      <div className="flex items-center justify-center w-8 h-8 text-white bg-blue-600 rounded-full hover:opacity-80">
-        {(
-          user.firstName?.[0] ||
-          user.primaryEmailAddress.emailAddress?.[0] ||
-          'U'
-        ).toUpperCase()}
+    <Link to={target} className="ml-4">
+      <div className="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-full">
+        {user.firstName?.[0] || user.primaryEmailAddress.emailAddress[0]}
       </div>
     </Link>
-  )
+  );
 })()}
+
 
 
       <span>|</span>
@@ -186,8 +203,7 @@ const Navbar = () => {
       <span>मराठी</span>
       <span>|</span>
       <Volume2 className="w-4 h-4" />
-      <span>|</span>
-      <span>screen-reader</span>
+
     </div>
   </div>
 </div>
@@ -250,21 +266,8 @@ const Navbar = () => {
           ['Dhopave', ''],
           ['UCM Coal Company Ltd', ''],
         ])}
-        {renderDropdown('Auction', [
-          ['Auction', ''],
-          ['List of e-Auction', ''],
-        ])}
         {renderNavLink('Financial Performance', '')}
         {renderNavLink('E-procurement Portal', '')}
-        {renderDropdown('Regulatory & Commercial', [
-          ['Regulatory & Commercial', ''],
-          ['Rules & Regulations', ''],
-          ['Regulatory Petitions', ''],
-          ['Approved Tariff', ''],
-          ['Approved PPA', ''],
-          ['Monthly Fuel Cost and CV Data', ''],
-          ['Fuel Utilisation Plan', ''],
-        ])}
         {renderDropdown('Media', [
           ['Photo Gallery', ''],
           ['Video Gallery', ''],

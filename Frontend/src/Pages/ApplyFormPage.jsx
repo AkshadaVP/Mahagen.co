@@ -2,10 +2,13 @@
 import React from 'react'
 import bg from '../assets/video001img.png'
 import ApplyForm from '../components/ApplyForm'
+import { Link } from 'react-router-dom'
+
 
 const ApplyFormPage = () => {
   return (
     <div className="relative w-full h-screen p-4">
+      
       {/* Fixed full‐screen background */}
       <div
         className="fixed inset-0 bg-fixed bg-center bg-cover"

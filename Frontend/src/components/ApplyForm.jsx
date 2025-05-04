@@ -4,6 +4,8 @@ import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@clerk/clerk-react'
 import { uploadFile } from '../lib/api'
+import { Link } from 'react-router-dom'
+
 // src/components/ApplyForm.jsx
 const API = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -226,6 +228,12 @@ const ApplyForm = () => {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      <Link
+                      to="/profile"
+                      className="inline-block px-4 py-2 mb-4 bg-gray-200 rounded hover:bg-gray-300"
+                    >
+                      ← Back to Profile
+      </Link>
       {/* Header + Passport Photo */}
       <div className="flex items-center justify-between">
         <div>

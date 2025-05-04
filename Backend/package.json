@@ -1,6 +1,7 @@
 {
-  "name": "backend",
+  "name": "mahagen-backend",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "node index.js",
@@ -15,11 +16,12 @@
   "dependencies": {
     "@clerk/backend": "^1.28.0",
     "@clerk/clerk-sdk-node": "^4.13.23",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "imagekit": "^6.0.0",
-    "mongoose": "^8.13.2",
+    "mongoose": "^8.14.1",
     "multer": "^1.4.5-lts.2",
     "nodemailer": "^6.10.1"
   },

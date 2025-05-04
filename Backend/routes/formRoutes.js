@@ -1,54 +1,55 @@
-const express = require('express')
-const router  = express.Router()
-const FormData = require('../models/FormData')
+// routes/formRoutes.js
+import { Router } from 'express';
+import FormData   from '../models/FormData.js';
 
-// POST /api/formdata          → save a new application form
+const router = Router();
+
+// POST /api/formdata
 router.post('/', async (req, res) => {
   try {
-    const submission = new FormData(req.body)
-    await submission.save()
-    res.status(201).json({ message: 'Application submitted', id: submission._id })
+    const sub = await FormData.create(req.body);
+    res.status(201).json({ message: 'OK', id: sub._id });
   } catch (err) {
-    console.error('Error saving formdata:', err.message)
-    res.status(400).json({ error: err.message })
+    console.error(err);
+    res.status(400).json({ error: err.message });
   }
-})
+});
 
-// GET /api/formdata           → list all submissions (admin)
+// GET all (admin)
 router.get('/', async (req, res) => {
   try {
-    const all = await FormData.find().sort({ createdAt: -1 })
-    res.json(all)
+    const list = await FormData.find().sort({ createdAt: -1 });
+    res.json(list);
   } catch (err) {
-    console.error('Error fetching formdata:', err.message)
-    res.status(500).json({ error: 'Failed to fetch submissions' })
+    console.error(err);
+    res.status(500).json({ error: 'Fetch failed' });
   }
-})
+});
 
-// GET /api/formdata/:email    → fetch one submission by email
+// GET by email
 router.get('/:email', async (req, res) => {
   try {
-    const sub = await FormData.findOne({ email: req.params.email })
-    if (!sub) return res.status(404).json({ error: 'No application found for this email.' })
-    res.json(sub)
+    const doc = await FormData.findOne({ email: req.params.email });
+    if (!doc) return res.status(404).json({ error: 'Not found' });
+    res.json(doc);
   } catch (err) {
-    console.error('Error fetching by email:', err.message)
-    res.status(500).json({ error: 'Failed to fetch submission' })
+    console.error(err);
+    res.status(500).json({ error: 'Fetch failed' });
   }
-})
+});
 
-// PUT /api/formdata/:id       → update status of a submission
+// PUT status
 router.put('/:id', async (req, res) => {
   try {
-    const sub = await FormData.findById(req.params.id)
-    if (!sub) return res.status(404).json({ error: 'Submission not found' })
-    sub.status = req.body.status
-    await sub.save()
-    res.json({ message: 'Status updated', status: sub.status })
+    const doc = await FormData.findById(req.params.id);
+    if (!doc) return res.status(404).json({ error: 'Not found' });
+    doc.status = req.body.status;
+    await doc.save();
+    res.json({ message: 'Updated', status: doc.status });
   } catch (err) {
-    console.error('Error updating status:', err.message)
-    res.status(500).json({ error: 'Failed to update status' })
+    console.error(err);
+    res.status(500).json({ error: 'Update failed' });
   }
-})
+});
 
-module.exports = router
+export default router;

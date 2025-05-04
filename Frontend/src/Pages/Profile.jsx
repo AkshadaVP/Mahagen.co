@@ -67,7 +67,6 @@ export default function Profile() {
 
   return (
     <>
-      <Navbar />
 
       <div className="max-w-3xl p-10 mx-auto my-12 mt-40 bg-gray-100 rounded-2xl">
         <Link
