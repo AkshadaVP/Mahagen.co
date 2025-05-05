@@ -15,7 +15,7 @@
   "description": "",
   "dependencies": {
     "@clerk/backend": "^1.28.0",
-    "@clerk/clerk-sdk-node": "^4.13.23",
+    "@clerk/clerk-sdk-node": "^5.1.6",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -23,6 +23,7 @@
     "imagekit": "^6.0.0",
     "mongoose": "^8.14.1",
     "multer": "^1.4.5-lts.2",
+    "node-mailjet": "^6.0.8",
     "nodemailer": "^6.10.1"
   },
   "devDependencies": {
