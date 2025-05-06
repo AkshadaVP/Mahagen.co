@@ -1,40 +1,39 @@
 // src/Pages/AdminDashboard.jsx
-import React, { useEffect, useState } from 'react'
-import { useUser }                  from '@clerk/clerk-react'
-import { adminUsers }               from '../config/adminEmails'
-import { Link }                     from 'react-router-dom'
-import Navbar                       from '../components/Navbar'
+import React, { useEffect, useState } from 'react';
+import { useUser }                  from '@clerk/clerk-react';
+import { adminUsers }               from '../config/adminEmails';
+import { Link }                     from 'react-router-dom';
 
-const API = import.meta.env.VITE_API_BASE_URL
-const STATUS_OPTIONS = ['underprocess', 'approved', 'rejected']
+const API = import.meta.env.VITE_API_BASE_URL;
+const STATUS_OPTIONS = ['underprocess', 'approved', 'rejected'];
 
 export default function AdminDashboard() {
-  const { user, isLoaded } = useUser()
-  const [forms,   setForms]   = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error,   setError]   = useState('')
+  const { user, isLoaded } = useUser();
+  const [forms,   setForms]   = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState('');
 
-  const email   = user?.primaryEmailAddress?.emailAddress.trim().toLowerCase()
+  const email   = user?.primaryEmailAddress?.emailAddress.trim().toLowerCase();
   const isAdmin = adminUsers.some(a =>
     a.email.trim().toLowerCase() === email && a.role === 'admin'
-  )
+  );
 
   useEffect(() => {
-    if (!isLoaded || !isAdmin) return
-    fetchForms()
-  }, [isLoaded, isAdmin])
+    if (!isLoaded || !isAdmin) return;
+    fetchForms();
+  }, [isLoaded, isAdmin]);
 
   async function fetchForms() {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError('');
     try {
-      const res = await fetch(`${API}/api/formdata`)
-      if (!res.ok) throw new Error()
-      setForms(await res.json())
+      const res = await fetch(`${API}/api/formdata`);
+      if (!res.ok) throw new Error();
+      setForms(await res.json());
     } catch {
-      setError('Failed to load submissions')
+      setError('Failed to load submissions');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -44,52 +43,50 @@ export default function AdminDashboard() {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ status }),
-      })
-      if (!res.ok) throw new Error()
-      fetchForms()
+      });
+      if (!res.ok) throw new Error();
+      fetchForms();
     } catch {
-      alert('Error updating status')
+      alert('Error updating status');
     }
   }
 
-  if (!isLoaded) return <p className="mt-10 text-center">Checking authentication…</p>
-  if (!isAdmin)  return <p className="mt-10 text-center text-red-600">Access Denied</p>
+  if (!isLoaded) return <p className="mt-10 text-center">Checking authentication…</p>;
+  if (!isAdmin)  return <p className="mt-10 text-center text-red-600">Access Denied</p>;
 
   return (
-    <>
-      <Navbar />
-
-      <div className="max-w-5xl p-6 mx-auto my-10 mt-40 bg-white rounded shadow">
+    <div className="bg-gray-50 min-h-screen flex flex-col items-center py-12">
+      <div className="max-w-5xl w-full p-6 bg-white rounded-xl shadow-lg">
         <Link
           to="/"
-          className="inline-block px-4 py-2 mb-4 bg-gray-200 rounded hover:bg-gray-300"
+          className="inline-block mb-6 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-all duration-300"
         >
           ← Back to Home
         </Link>
 
-        <h1 className="mb-6 text-3xl font-bold">Form Approval</h1>
+        <h1 className="mb-6 text-3xl font-semibold text-gray-800">Form Approval</h1>
 
         {error && <p className="mb-4 text-red-500">{error}</p>}
-        {loading && <p className="text-center">Loading…</p>}
+        {loading && <p className="text-center text-gray-500">Loading…</p>}
 
         {!loading && (
-          <table className="w-full text-sm border table-auto">
+          <table className="w-full table-auto text-sm text-left text-gray-600 border-separate border-spacing-0.5">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="p-2 border">Candidate Name</th>
-                <th className="p-2 border">Email</th>
-                <th className="p-2 border">Current Status</th>
-                <th className="p-2 border">Set Status</th>
-                <th className="p-2 border">View Form</th>
+              <tr className="bg-gray-100 text-gray-700">
+                <th className="p-3 border rounded-tl-lg">Candidate Name</th>
+                <th className="p-3 border">Email</th>
+                <th className="p-3 border">Current Status</th>
+                <th className="p-3 border">Set Status</th>
+                <th className="p-3 border rounded-tr-lg">View Form</th>
               </tr>
             </thead>
             <tbody>
               {forms.map(form => (
-                <tr key={form._id} className="text-center border-t">
-                  <td className="p-2 border">{form.candidateName}</td>
-                  <td className="p-2 border">{form.email}</td>
-                  <td className="p-2 capitalize border">{form.status}</td>
-                  <td className="p-2 border">
+                <tr key={form._id} className="bg-white hover:bg-gray-50 transition-colors duration-300">
+                  <td className="p-3 border">{form.candidateName}</td>
+                  <td className="p-3 border">{form.email}</td>
+                  <td className="p-3 capitalize border">{form.status}</td>
+                  <td className="p-3 border">
                     <div className="flex justify-center space-x-4">
                       {STATUS_OPTIONS.map(opt => (
                         <label key={opt} className="flex items-center space-x-1">
@@ -98,19 +95,19 @@ export default function AdminDashboard() {
                             name={`status-${form._id}`}
                             checked={form.status === opt}
                             onChange={() => updateStatus(form._id, opt)}
-                            className="w-4 h-4"
+                            className="w-4 h-4 text-blue-600"
                           />
-                          <span className="capitalize">
-                            {opt.replace('underprocess','under process')}
+                          <span className="capitalize text-gray-700">
+                            {opt.replace('underprocess', 'under process')}
                           </span>
                         </label>
                       ))}
                     </div>
                   </td>
-                  <td className="p-2 border">
+                  <td className="p-3 border">
                     <Link
                       to={`/view-application/${encodeURIComponent(form.email)}`}
-                      className="px-2 py-1 text-blue-600 border border-blue-600 rounded hover:bg-blue-50"
+                      className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-all duration-300"
                     >
                       View
                     </Link>
@@ -121,6 +118,6 @@ export default function AdminDashboard() {
           </table>
         )}
       </div>
-    </>
-  )
+    </div>
+  );
 }

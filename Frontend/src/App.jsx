@@ -31,6 +31,8 @@ import GpIiCoalMine      from './Pages/GpIiCoalMine';
 import ApplyFormPage     from './Pages/ApplyFormPage';
 import ViewApplication   from './Pages/ViewApplication';
 import ReadOnlyApplicationForm from './Pages/ReadOnlyApplicationForm';
+import KeyOfficialsMSPGCL from './Pages/KeyOfficialsMSPGCL'; // Adjust the path accordingly
+
 
 // Auth flows
 import UserSignIn    from './Pages/UserSignIn';
@@ -48,26 +50,29 @@ import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 function AppRoutes() {
   const { pathname } = useLocation();
 
-  // hide the Navbar on sign-in, create-account, and apply-form
+  // Explicitly check for /admin-dashboard to hide the Navbar
   const hideNav =
-    pathname.startsWith('/sign-in') ||
+    pathname === '/sign-in' ||
     pathname === '/create-account' ||
-    pathname === '/apply-form' || 
-    pathname === '/profile' || 
-    pathname === '/view-application';
+    pathname === '/apply-form' ||
+    pathname === '/profile' ||
+    pathname === '/view-application' ||
+    pathname === '/admin-dashboard'; // Specifically hide on admin-dashboard route
 
   return (
     <>
-      {!hideNav && <Navbar />}
+      {!hideNav && <Navbar />} {/* Only show Navbar if it's not on the admin-dashboard route */}
 
       <ClerkLoaded>
         <Routes>
           {/** PUBLIC **/}
+
           <Route path="/"                   element={<Header />} />
           <Route path="/about-us"           element={<AboutUs />} />
           <Route path="/vision-mission"     element={<VandM />} />
           <Route path="/board-of-directors" element={<Bod />} />
-          <Route path="/history"            element={<History />} />
+          <Route path="/history"            element={<History />} /> {/* Keep the history route */}
+          <Route path="/key-officials"      element={<KeyOfficialsMSPGCL />} /> {/* New route for Key Officials */}
           <Route path="/thermal-projects"   element={<ThermalProjects />} />
           <Route path="/installed-capacity" element={<InstalledCapacity />} />
           <Route path="/board-members"      element={<BoardMembers />} />
@@ -75,10 +80,8 @@ function AppRoutes() {
           <Route path="/gp-ii"              element={<GpIiCoalMine />} />
           <Route path="/apply-form"         element={<ApplyFormPage />} />
           <Route path="/view-application"   element={<ViewApplication />} />
-          <Route
-            path="/view-application/:email"
-            element={<ReadOnlyApplicationForm />}
-          />
+          <Route path="/view-application/:email" element={<ReadOnlyApplicationForm />} />
+
 
           {/** AUTH (signed-out only) **/}
           <Route

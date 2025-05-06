@@ -11,7 +11,9 @@ const RedirectAfterLogin = () => {
   useEffect(() => {
     if (!isLoaded || !user) return;
 
-    const email = user?.primaryEmailAddress?.emailAddress?.trim().toLowerCase();
+    const email = user.primaryEmailAddress?.emailAddress
+      .trim()
+      .toLowerCase();
 
     const isAdmin = adminUsers.some(
       (admin) =>
@@ -25,7 +27,7 @@ const RedirectAfterLogin = () => {
     if (isAdmin) {
       navigate("/admin-dashboard");
     } else {
-      navigate("/user-dashboard");
+      navigate("/");  // <-- non-admins now go to home page
     }
   }, [user, isLoaded, navigate]);
 

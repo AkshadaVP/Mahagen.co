@@ -8,10 +8,9 @@ export default function UserSignIn() {
       <SignIn
         routing="path"
         path="/sign-in"
-        // if the user is already authenticated, send them home:
-        fallbackRedirectUrl="/profile"
-        // fallback if something goes sideways (eg: factor-one step)
-        forceRedirectUrl="/profile"
+        // send everyone to the home page after sign-in (and on any fallback)
+        fallbackRedirectUrl="/"
+        forceRedirectUrl="/"
         // link shown under the widget: “New user? Register”
         signUpUrl="/create-account"
       />

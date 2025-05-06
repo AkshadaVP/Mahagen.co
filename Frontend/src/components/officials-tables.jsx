@@ -363,9 +363,6 @@ export default function OfficialsTable() {
               <th className="px-4 py-2 text-left border">Name</th>
               <th className="px-4 py-2 text-left border">DESIGNATION</th>
               <th className="px-4 py-2 text-left border">ADDRESS</th>
-              <th className="px-4 py-2 text-left border">Office Ph.No.</th>
-              <th className="px-4 py-2 text-left border">FAX</th>
-              <th className="px-4 py-2 text-left border">E-mail</th>
             </tr>
           </thead>
           <tbody>
@@ -375,9 +372,6 @@ export default function OfficialsTable() {
                 <td className="px-4 py-2 border">{official.name}</td>
                 <td className="px-4 py-2 border">{official.designation}</td>
                 <td className="px-4 py-2 border">{official.address}</td>
-                <td className="px-4 py-2 border">{official.phone}</td>
-                <td className="px-4 py-2 border">{official.fax}</td>
-                <td className="px-4 py-2 border">{official.email}</td>
               </tr>
             ))}
           </tbody>

@@ -131,7 +131,7 @@ const closeDropdown = () => {
       </div>
       <div className="flex items-center">
         <Mail className="w-4 h-4 mr-1" />
-        <span>webposting@mahagenco.in</span>
+        <span>webposting@maha-genco.co.in</span>
       </div>
     </div>
 
@@ -181,7 +181,7 @@ const closeDropdown = () => {
   return (
     <Link to={target} className="ml-4">
       <div className="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-full">
-        {user.firstName?.[0] || user.primaryEmailAddress.emailAddress[0]}
+        {user.firstName?.[0] || user.primaryEmailAddress.emailAddress[0].toUpperCase()}
       </div>
     </Link>
   );
@@ -235,11 +235,11 @@ const closeDropdown = () => {
       </div>
 
       {/* Main Navigation */}
-      <div
-        className={`relative flex items-center p-2 text-sm font-medium pl-14 gap-7 transition-colors ${
-          scrolled ? 'bg-white text-black' : 'bg-transparent text-white'
-        }`}
-      >
+        <div
+          className={`relative flex w-full items-center justify-evenly p-2 text-sm font-medium transition-colors ${
+            scrolled ? 'bg-white text-black' : 'bg-transparent text-white'
+          }`}
+        >
         {renderNavLink('Home', '/')}
         {renderDropdown('About Us', [
           ['About Us', '/about-us'],
@@ -247,7 +247,7 @@ const closeDropdown = () => {
           ['Vision & Mission', '/vision-mission'],
           ['Board of Directors of MSPGCL', '/board-of-directors'],
           ['Board Members of MSEB Holding', '/board-mseb'],
-          ['Key Officials of MSPGCL', '/history'],
+          ['Key Officials of MSPGCL', '/key-officials'],
           ['Organization Structure', ''],
         ])}
         {renderDropdown('Generation', [
