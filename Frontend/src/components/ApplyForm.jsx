@@ -95,8 +95,8 @@ const ApplyForm = () => {
     if (type === 'file') {
       if (name === 'documents') {
         const arr = Array.from(files)
-        if (arr.length < 1 || arr.length > 3) {
-          setDocError('Select between 1 and 3 documents')
+        if (arr.length < 1) {
+          setDocError('Select at least one document')
           return
         } else {
           setDocError('')
@@ -111,6 +111,7 @@ const ApplyForm = () => {
       setForm(f => ({ ...f, [name]: value }))
     }
   }
+
 
   // 8️⃣ remove a file from your form state
   const removeFile = field => {
@@ -279,12 +280,8 @@ const ApplyForm = () => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* 1 */}
         <div>
-          <label className="block text-sm font-medium">1. Application for</label>
+          <label className="block text-sm font-medium">1. Application for the Post</label>
           <input name="applicationFor" onChange={onChange} className={inputClass} />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Name of Post</label>
-          <input name="postName" onChange={onChange} className={inputClass} />
         </div>
         {/* 2 */}
         <div className="md:col-span-2">
@@ -357,7 +354,7 @@ const ApplyForm = () => {
         </div>
         {/* 9 */}
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium">9. Age (as on 01-07-2021)</label>
+          <label className="block text-sm font-medium">9. Age (as on 01-01-2025)</label>
           <div className="flex items-center mt-1 space-x-2">
             <span className="text-sm">Years</span>
             <input name="ageYears" onChange={onChange} className="p-1 text-sm border rounded w-14" />
@@ -496,7 +493,7 @@ const ApplyForm = () => {
         </div>
         {/* 18: Documents */}
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium">Upload Documents (min 1, max 3)</label>
+          <label className="block text-sm font-medium">Upload Documents (min 1, no max limit)</label>
           <div className="flex mt-1 space-x-2">
             <button type="button" onClick={() => docsRef.current.click()} className="px-3 py-1 text-sm bg-gray-200 rounded">
               Select Files

