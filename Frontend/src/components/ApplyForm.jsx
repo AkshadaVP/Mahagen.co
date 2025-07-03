@@ -48,12 +48,16 @@ const ApplyForm = () => {
     state: '',
     pin: '',
     station: '',
+<<<<<<< HEAD
     empId: '',       // <-- added
     dojDay: '',      // <-- added
     dojMonth: '',    // <-- added
     dojYear: '',     // <-- added
   });
 
+=======
+  })
+>>>>>>> 0f631ee937e237007f88a63287fc57869b98c29c
 
   const [qualificationRows, setQualificationRows] = useState(form.qualifications)
   const [errors, setErrors] = useState({})
@@ -86,11 +90,15 @@ const ApplyForm = () => {
       form.passportPhoto &&
       form.thumb &&
       form.signature &&
+<<<<<<< HEAD
       form.documents.length > 0 &&
       form.empId &&                        // employee id is filled
       form.dojDay &&                       // date of joining day
       form.dojMonth &&                     // date of joining month
       form.dojYear                         // date of joining year
+=======
+      form.documents.length > 0
+>>>>>>> 0f631ee937e237007f88a63287fc57869b98c29c
     )
   }
 
@@ -592,6 +600,7 @@ const ApplyForm = () => {
         </button>
       </div>
 
+<<<<<<< HEAD
 
       {/* 13: Employee ID and Date of Joining */}
       <div className="space-y-2 md:col-span-2 mt-4">
@@ -633,6 +642,9 @@ const ApplyForm = () => {
 
 
       {/* 14 */}
+=======
+      {/* 13 */}
+>>>>>>> 0f631ee937e237007f88a63287fc57869b98c29c
       <div className="space-y-1 md:col-span-2">
         <label className="block text-sm font-medium">13. Address (for correspondence):</label>
         <input
@@ -683,7 +695,11 @@ const ApplyForm = () => {
         </div>
       </div>
 
+<<<<<<< HEAD
       {/* 15 */}
+=======
+      {/* 14 */}
+>>>>>>> 0f631ee937e237007f88a63287fc57869b98c29c
       <div className="md:col-span-2">
         <label className="block text-sm font-medium">14. Nearest Railway Station</label>
         <input
@@ -694,7 +710,11 @@ const ApplyForm = () => {
         />
       </div>
 
+<<<<<<< HEAD
       {/* 16 & 17: Thumb & Signature */}
+=======
+      {/* 15 & 16: Thumb & Signature */}
+>>>>>>> 0f631ee937e237007f88a63287fc57869b98c29c
       <div className="grid grid-cols-2 gap-4 md:col-span-2">
 
         {['thumb', 'signature'].map(field => (
