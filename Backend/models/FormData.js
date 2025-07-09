@@ -37,6 +37,11 @@ const formDataSchema = new mongoose.Schema({
   signatureUrl:      String,
   documentUrls:      [String],
   declaration:       Boolean,
+  empId:             String,
+  dojDay:            String,
+  dojMonth:          String,
+  dojYear:           String,
+  applicationStatus: { type: String, default: 'pending', enum: ['pending','approved','rejected'] },
   createdAt:         { type: Date, default: Date.now }
 }, {
   collection: 'formdata'

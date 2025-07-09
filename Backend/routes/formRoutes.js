@@ -38,14 +38,28 @@ router.get('/:email', async (req, res) => {
   }
 });
 
-// PUT status
-router.put('/:id', async (req, res) => {
+// GET by MongoDB _id
+router.get('/id/:id', async (req, res) => {
   try {
     const doc = await FormData.findById(req.params.id);
     if (!doc) return res.status(404).json({ error: 'Not found' });
-    doc.status = req.body.status;
-    await doc.save();
-    res.json({ message: 'Updated', status: doc.status });
+    res.json(doc);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Fetch failed' });
+  }
+});
+
+// PUT update all fields
+router.put('/:id', async (req, res) => {
+  try {
+    const updated = await FormData.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ error: 'Not found' });
+    res.json(updated);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Update failed' });

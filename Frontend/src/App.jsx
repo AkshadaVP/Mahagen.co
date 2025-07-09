@@ -80,7 +80,7 @@ function AppRoutes() {
           <Route path="/gp-ii"              element={<GpIiCoalMine />} />
           <Route path="/apply-form"         element={<ApplyFormPage />} />
           <Route path="/view-application"   element={<ViewApplication />} />
-          <Route path="/view-application/:email" element={<ReadOnlyApplicationForm />} />
+          <Route path="/view-application/:id" element={<ReadOnlyApplicationForm />} />
 
 
           {/** AUTH (signed-out only) **/}

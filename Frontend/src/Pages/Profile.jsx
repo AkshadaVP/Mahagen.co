@@ -129,7 +129,7 @@ export default function Profile() {
 
                 {/* Always show “View Full Application” once they've applied */}
                 <Link
-                  to={`/view-application/${encodeURIComponent(email)}`}
+                  to={applicationData._id ? `/view-application/${applicationData._id}` : '#'}
                   className="inline-block px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-50"
                 >
                   View Full Application

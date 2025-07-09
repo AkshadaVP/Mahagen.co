@@ -1,24 +1,22 @@
 // src/Pages/ViewApplication.jsx
 import React, { useEffect, useState } from 'react';
-import { useUser } from '@clerk/clerk-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
 export default function ViewApplication() {
-  const { user, isLoaded } = useUser();
+  const { id } = useParams();
   const [app, setApp] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoaded || !user) return;
+    if (!id) return;
     (async () => {
       try {
-        const email = encodeURIComponent(user.primaryEmailAddress.emailAddress);
-        const res = await fetch(`${API}/api/formdata/${email}`);
+        const res = await fetch(`${API}/api/formdata/id/${id}?t=${Date.now()}`);
         if (!res.ok) {
           const json = await res.json();
           throw new Error(json.error || res.statusText);
@@ -30,7 +28,16 @@ export default function ViewApplication() {
         setLoading(false);
       }
     })();
-  }, [isLoaded, user]);
+  }, [id]);
+
+  if (!id) {
+    return (
+      <>
+        <Navbar />
+        <div className="p-8 text-center">No application data available.</div>
+      </>
+    );
+  }
 
   if (!isLoaded || loading) {
     return (
@@ -70,6 +77,13 @@ export default function ViewApplication() {
         <h1 className="mb-6 text-2xl font-bold">Your Application</h1>
 
         <div className="space-y-4">
+        <div><strong>Employee ID:</strong> {app.empId || 'N/A'}</div>
+        <div>
+          <strong>Date of Joining:</strong>{' '}
+          {app.dojDay && app.dojMonth && app.dojYear
+            ? `${app.dojDay}/${app.dojMonth}/${app.dojYear}`
+            : 'N/A'}
+        </div>
         <div className='flex justify-between gap-3'>
                 <Img url={app.passportPhotoUrl} label="Photo" />
                 <Img url={app.thumbUrl} label="Thumb Print" />

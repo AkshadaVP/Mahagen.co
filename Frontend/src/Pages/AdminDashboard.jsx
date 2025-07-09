@@ -3,6 +3,19 @@ import React, { useEffect, useState } from 'react';
 import { useUser }                  from '@clerk/clerk-react';
 import { adminUsers }               from '../config/adminEmails';
 import { Link }                     from 'react-router-dom';
+import ApplyForm from '../components/ApplyForm';
+
+// Simple Modal component
+function Modal({ children, onClose }) {
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: 'white', borderRadius: 8, padding: 24, minWidth: 350, maxWidth: '90vw', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: 8, right: 12, fontSize: 22, background: 'none', border: 'none', cursor: 'pointer' }}>&times;</button>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 const API = import.meta.env.VITE_API_BASE_URL;
 const STATUS_OPTIONS = ['underprocess', 'approved', 'rejected'];
@@ -12,6 +25,7 @@ export default function AdminDashboard() {
   const [forms,   setForms]   = useState([]);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
+  const [editingForm, setEditingForm] = useState(null);
 
   const email   = user?.primaryEmailAddress?.emailAddress.trim().toLowerCase();
   const isAdmin = adminUsers.some(a =>
@@ -77,7 +91,8 @@ export default function AdminDashboard() {
                 <th className="p-3 border">Email</th>
                 <th className="p-3 border">Current Status</th>
                 <th className="p-3 border">Set Status</th>
-                <th className="p-3 border rounded-tr-lg">View Form</th>
+                <th className="p-3 border">View Form</th>
+                <th className="p-3 border rounded-tr-lg">Edit</th>
               </tr>
             </thead>
             <tbody>
@@ -106,16 +121,51 @@ export default function AdminDashboard() {
                   </td>
                   <td className="p-3 border">
                     <Link
-                      to={`/view-application/${encodeURIComponent(form.email)}`}
+                      to={`/view-application/${form._id}`}
                       className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-all duration-300"
                     >
                       View
                     </Link>
                   </td>
+                  <td className="p-3 border">
+                    <button
+                      onClick={() => setEditingForm(form)}
+                      className="px-4 py-2 text-green-600 border border-green-600 rounded-md hover:bg-green-50 transition-all duration-300"
+                    >
+                      Edit
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        )}
+        {editingForm && (
+          <Modal onClose={() => setEditingForm(null)}>
+            <ApplyForm
+              initialData={editingForm}
+              isAdmin={true}
+              onSave={async (updated) => {
+                try {
+                  console.log('Admin PUT payload:', updated);
+                  const res = await fetch(`${API}/api/formdata/${editingForm._id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updated),
+                  });
+                  const data = await res.json();
+                  console.log('PUT response:', data);
+                  if (!res.ok) throw new Error(`Status ${res.status}`);
+                  setEditingForm(null);
+                  alert('Details saved successfully!');
+                  fetchForms();
+                } catch (err) {
+                  console.error('Error saving details:', err);
+                  alert('Failed to save details. See console for error.');
+                }
+              }}
+            />
+          </Modal>
         )}
       </div>
     </div>

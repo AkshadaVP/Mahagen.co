@@ -6,16 +6,16 @@ import { Link } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react'
 //NewCode
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const inputClass = "w-full p-1 mt-1 border rounded text-sm"
-const radioClass = "h-5 w-5 text-blue-600 mr-1"
+const inputClass = "w-full p-1 mt-1 border rounded text-sm";
+const radioClass = "h-5 w-5 text-blue-600 mr-1";
 
-const ApplyForm = () => {
-  const { user } = useUser()
-  const navigate = useNavigate()
+const ApplyForm = ({ initialData, isAdmin = false, onSave }) => {
+  const { user } = useUser();
+  const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const defaultForm = {
     passportPhoto: null,
     thumb: null,
     signature: null,
@@ -40,7 +40,6 @@ const ApplyForm = () => {
     ageDays: '',
     govtEmp: '',
     exServ: '',
-    visibleMark: '',
     addrName: '',
     po: '',
     city: '',
@@ -48,29 +47,30 @@ const ApplyForm = () => {
     state: '',
     pin: '',
     station: '',
-<<<<<<< HEAD
-    empId: '',       // <-- added
-    dojDay: '',      // <-- added
-    dojMonth: '',    // <-- added
-    dojYear: '',     // <-- added
-  });
+    applicationStatus: 'pending',
+    empId: '',
+    dojDay: '',
+    dojMonth: '',
+    dojYear: '',
+  };
+  const [form, setForm] = useState(initialData ? { ...defaultForm, ...initialData } : defaultForm);
 
-=======
-  })
->>>>>>> 0f631ee937e237007f88a63287fc57869b98c29c
-
-  const [qualificationRows, setQualificationRows] = useState(form.qualifications)
-  const [errors, setErrors] = useState({})
-  const [docError, setDocError] = useState('')
-
-  const photoRef = useRef()
-  const thumbRef = useRef()
-  const signRef = useRef()
-  const docsRef = useRef()
-
+  // If initialData changes (e.g. admin selects a new user), update form state
   useEffect(() => {
-    validate()
-  }, [form, qualificationRows])
+    if (initialData) {
+      setForm(f => ({ ...defaultForm, ...initialData }));
+      setQualificationRows(initialData.qualifications || defaultForm.qualifications);
+    }
+  }, [initialData]);
+
+  const [qualificationRows, setQualificationRows] = useState(form.qualifications);
+  const [errors, setErrors] = useState({});
+  const [docError, setDocError] = useState('');
+
+  const photoRef = useRef();
+  const thumbRef = useRef();
+  const signRef = useRef();
+  const docsRef = useRef();
 
   const validate = (data = form, qualRows = qualificationRows) => {
     const errs = {}
@@ -80,26 +80,34 @@ const ApplyForm = () => {
     if (!data.signature) errs.signature = 'Required'
     if (data.documents.length < 1) errs.documents = 'Upload at least one file'
 
+    if (data.applicationStatus === 'approved') {
+      if (!data.empId) errs.empId = 'Required';
+      if (!data.dojDay) errs.dojDay = 'Required';
+      if (!data.dojMonth) errs.dojMonth = 'Required';
+      if (!data.dojYear) errs.dojYear = 'Required';
+    }
+
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
 
   // Disable submit only if any required file is missing
   const isFormValid = () => {
-    return (
+    const baseValid =
       form.passportPhoto &&
       form.thumb &&
       form.signature &&
-<<<<<<< HEAD
-      form.documents.length > 0 &&
-      form.empId &&                        // employee id is filled
-      form.dojDay &&                       // date of joining day
-      form.dojMonth &&                     // date of joining month
-      form.dojYear                         // date of joining year
-=======
-      form.documents.length > 0
->>>>>>> 0f631ee937e237007f88a63287fc57869b98c29c
-    )
+      form.documents.length > 0;
+    if (form.applicationStatus === 'approved') {
+      return (
+        baseValid &&
+        form.empId &&
+        form.dojDay &&
+        form.dojMonth &&
+        form.dojYear
+      );
+    }
+    return baseValid;
   }
 
   const onChange = e => {
@@ -133,7 +141,39 @@ const ApplyForm = () => {
       })
     } else {
       setForm(f => {
-        const updated = { ...f, [name]: value }
+        let updated = { ...f, [name]: value }
+        // Auto-calculate age if DOB fields are changed
+        if (["dobDay", "dobMonth", "dobYear"].includes(name)) {
+          const { dobDay, dobMonth, dobYear } =
+            name === "dobDay"
+              ? { dobDay: value, dobMonth: f.dobMonth, dobYear: f.dobYear }
+              : name === "dobMonth"
+              ? { dobDay: f.dobDay, dobMonth: value, dobYear: f.dobYear }
+              : { dobDay: f.dobDay, dobMonth: f.dobMonth, dobYear: value };
+          if (dobDay.length === 2 && dobMonth.length === 2 && dobYear.length === 4) {
+            const dob = new Date(`${dobYear}-${dobMonth}-${dobDay}`);
+            if (!isNaN(dob)) {
+              const today = new Date();
+              let years = today.getFullYear() - dob.getFullYear();
+              let months = today.getMonth() - dob.getMonth();
+              let days = today.getDate() - dob.getDate();
+              if (days < 0) {
+                months--;
+                days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+              }
+              if (months < 0) {
+                years--;
+                months += 12;
+              }
+              updated = {
+                ...updated,
+                ageYears: years >= 0 ? years.toString() : '',
+                ageMonths: months >= 0 ? months.toString() : '',
+                ageDays: days >= 0 ? days.toString() : '',
+              };
+            }
+          }
+        }
         validate(updated)
         return updated
       })
@@ -166,6 +206,10 @@ const ApplyForm = () => {
 
   const onSubmit = async e => {
     e.preventDefault()
+    if (!user || !user.primaryEmailAddress) {
+      alert("User not loaded or not logged in.");
+      return;
+    }
     if (!validate()) return
 
     try {
@@ -196,7 +240,6 @@ const ApplyForm = () => {
 
       const payload = {
         email: user.primaryEmailAddress.emailAddress,
-
         applicationFor: form.applicationFor,
         postName: form.postName,
         division: form.division,
@@ -219,6 +262,11 @@ const ApplyForm = () => {
         signatureUrl,
         documentUrls,
         declaration: form.declaration,
+        applicationStatus: form.applicationStatus, // added
+        empId: form.empId, // added
+        dojDay: form.dojDay, // added
+        dojMonth: form.dojMonth, // added
+        dojYear: form.dojYear, // added
       }
 
       const res = await fetch(`${API_BASE_URL}/api/formdata`, {
@@ -235,16 +283,76 @@ const ApplyForm = () => {
     }
   }
 
-  return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <Link
-        to="/profile"
-        className="inline-block px-4 py-2 mb-4 bg-gray-200 rounded hover:bg-gray-300"
-      >
-        ← Back to Profile
-      </Link>
+  const handleAdminSave = async e => {
+    e.preventDefault();
+    if (onSave) {
+      const { applicationStatus, ...editableFields } = form;
+      console.log('Admin save payload:', editableFields);
+      await onSave(editableFields);
+    } else {
+      const { applicationStatus, ...editableFields } = form;
+      console.log('Admin save payload:', editableFields);
+      await fetch(`${API_BASE_URL}/api/formdata/${form._id || form.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editableFields),
+      });
+      alert('Saved!');
+    }
+  };
 
-      {/* Header + Passport Photo */}
+  return (
+    <form onSubmit={isAdmin ? handleAdminSave : onSubmit} className="space-y-4">
+      {!isAdmin && (
+        <Link
+          to="/profile"
+          className="inline-block px-4 py-2 mb-4 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          ← Back to Profile
+        </Link>
+      )}
+
+      {/* Employee ID and DOJ at the top for admin */}
+      {isAdmin && (
+        <div className="flex space-x-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium">Employee ID</label>
+            <input
+              name="empId"
+              value={form.empId}
+              onChange={onChange}
+              className="w-32 p-1 text-sm border rounded"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Date of Joining</label>
+            <div className="flex space-x-1">
+              <input
+                name="dojDay"
+                value={form.dojDay}
+                onChange={onChange}
+                className="w-10 p-1 text-sm border rounded"
+              />
+              <span>/</span>
+              <input
+                name="dojMonth"
+                value={form.dojMonth}
+                onChange={onChange}
+                className="w-10 p-1 text-sm border rounded"
+              />
+              <span>/</span>
+              <input
+                name="dojYear"
+                value={form.dojYear}
+                onChange={onChange}
+                className="w-14 p-1 text-sm border rounded"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Header + Passport Photo (with photo rendering for admin) */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-bold">MAHA-GENCO RECRUITMENT BOARD</h2>
@@ -254,7 +362,13 @@ const ApplyForm = () => {
           className="relative w-24 h-24 overflow-hidden border-2 rounded cursor-pointer"
           onClick={() => photoRef.current.click()}
         >
-          {form.passportPhoto ? (
+          {isAdmin && form.passportPhotoUrl ? (
+            <img
+              src={form.passportPhotoUrl}
+              alt="Passport"
+              className="object-cover w-full h-full"
+            />
+          ) : form.passportPhoto ? (
             <img
               src={URL.createObjectURL(form.passportPhoto)}
               alt="Passport"
@@ -265,7 +379,7 @@ const ApplyForm = () => {
               Upload Passport Photo
             </div>
           )}
-          {form.passportPhoto && (
+          {(form.passportPhoto || (isAdmin && form.passportPhotoUrl)) && (
             <button
               type="button"
               onClick={() => removeFile('passportPhoto')}
@@ -284,6 +398,54 @@ const ApplyForm = () => {
           />
         </div>
       </div>
+
+      {/* Admin: Thumb and Signature photo rendering */}
+      {isAdmin && (
+        <div className="grid grid-cols-2 gap-4 md:col-span-2 mb-4">
+          {['thumb', 'signature'].map(field => (
+            <div
+              key={field}
+              className="relative w-24 h-24 overflow-hidden border-2 rounded cursor-pointer"
+              onClick={() => (field === 'thumb' ? thumbRef.current : signRef.current).click()}
+            >
+              {form[`${field}Url`] ? (
+                <img
+                  src={form[`${field}Url`]}
+                  alt={field}
+                  className="object-cover w-full h-full"
+                />
+              ) : form[field] ? (
+                <img
+                  src={URL.createObjectURL(form[field])}
+                  alt={field}
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-xs text-gray-500">
+                  {field === 'thumb' ? 'Upload Thumb' : 'Upload Sign'}
+                </div>
+              )}
+              {(form[field] || form[`${field}Url`]) && (
+                <button
+                  type="button"
+                  onClick={() => removeFile(field)}
+                  className="absolute top-0 right-0 bg-white rounded-full p-0.5"
+                >
+                  &times;
+                </button>
+              )}
+              <input
+                type="file"
+                name={field}
+                accept="image/*"
+                ref={field === 'thumb' ? thumbRef : signRef}
+                onChange={onChange}
+                className="hidden"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* 1 */}
       <div>
@@ -552,18 +714,7 @@ const ApplyForm = () => {
 
       {/* 11 */}
       <div className="md:col-span-2">
-        <label className="block text-sm font-medium">11. Visible Mark of Identification on Body</label>
-        <input
-          name="visibleMark"
-          value={form.visibleMark}
-          onChange={onChange}
-          className={inputClass}
-        />
-      </div>
-
-      {/* 12 */}
-      <div className="md:col-span-2">
-        <label className="block text-sm font-medium">12. Qualification (Fill only those …)</label>
+        <label className="block text-sm font-medium">11. Qualification (Fill only those …)</label>
         <table className="w-full mt-1 text-sm border">
           <thead>
             <tr className="bg-gray-100">
@@ -600,51 +751,83 @@ const ApplyForm = () => {
         </button>
       </div>
 
-<<<<<<< HEAD
 
-      {/* 13: Employee ID and Date of Joining */}
-      <div className="space-y-2 md:col-span-2 mt-4">
-        <label className="block text-sm font-medium">13. Employee ID and Date of Joining</label>
-        <input
-          name="empId"
-          placeholder="Employee ID"
-          value={form.empId}
-          onChange={onChange}
-          className="w-full p-1 text-sm border rounded"
-        />
-        <div className="flex mt-1 space-x-2">
-          <input
-            name="dojDay"
-            placeholder="DD"
-            maxLength={2}
-            value={form.dojDay}
-            onChange={onChange}
-            className="w-14 p-1 text-sm border rounded"
-          />
-          <input
-            name="dojMonth"
-            placeholder="MM"
-            maxLength={2}
-            value={form.dojMonth}
-            onChange={onChange}
-            className="w-14 p-1 text-sm border rounded"
-          />
-          <input
-            name="dojYear"
-            placeholder="YYYY"
-            maxLength={4}
-            value={form.dojYear}
-            onChange={onChange}
-            className="w-20 p-1 text-sm border rounded"
-          />
+      {/* Admin: empId and DOJ fields side by side under photos */}
+      {isAdmin && (
+        <div className="flex space-x-4 mt-4">
+          <div>
+            <label className="block text-sm font-medium">Employee ID</label>
+            <input
+              name="empId"
+              value={form.empId}
+              onChange={onChange}
+              className="w-32 p-1 text-sm border rounded"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Date of Joining</label>
+            <div className="flex space-x-1">
+              <input
+                name="dojDay"
+                value={form.dojDay}
+                onChange={onChange}
+                className="w-10 p-1 text-sm border rounded"
+              />
+              <span>/</span>
+              <input
+                name="dojMonth"
+                value={form.dojMonth}
+                onChange={onChange}
+                className="w-10 p-1 text-sm border rounded"
+              />
+              <span>/</span>
+              <input
+                name="dojYear"
+                value={form.dojYear}
+                onChange={onChange}
+                className="w-14 p-1 text-sm border rounded"
+              />
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+      {/* User: Conditionally render empId and DOJ fields if approved */}
+      {!isAdmin && form.applicationStatus === 'approved' && (
+        <div className="space-y-2 md:col-span-2 mt-4">
+          <label className="block text-sm font-medium">Employee ID (auto-generated)</label>
+          <input
+            name="empId"
+            value={form.empId}
+            readOnly
+            className="w-full p-1 text-sm border rounded bg-gray-100"
+          />
+          <label className="block text-sm font-medium">Date of Joining (auto-filled)</label>
+          <div className="flex mt-1 space-x-2">
+            <input
+              name="dojDay"
+              value={form.dojDay}
+              readOnly
+              className="w-14 p-1 text-sm border rounded bg-gray-100"
+            />
+            <input
+              name="dojMonth"
+              value={form.dojMonth}
+              readOnly
+              className="w-14 p-1 text-sm border rounded bg-gray-100"
+            />
+            <input
+              name="dojYear"
+              value={form.dojYear}
+              readOnly
+              className="w-20 p-1 text-sm border rounded bg-gray-100"
+            />
+          </div>
+        </div>
+      )}
 
 
       {/* 14 */}
-=======
       {/* 13 */}
->>>>>>> 0f631ee937e237007f88a63287fc57869b98c29c
       <div className="space-y-1 md:col-span-2">
         <label className="block text-sm font-medium">13. Address (for correspondence):</label>
         <input
@@ -695,11 +878,8 @@ const ApplyForm = () => {
         </div>
       </div>
 
-<<<<<<< HEAD
       {/* 15 */}
-=======
       {/* 14 */}
->>>>>>> 0f631ee937e237007f88a63287fc57869b98c29c
       <div className="md:col-span-2">
         <label className="block text-sm font-medium">14. Nearest Railway Station</label>
         <input
@@ -710,11 +890,8 @@ const ApplyForm = () => {
         />
       </div>
 
-<<<<<<< HEAD
       {/* 16 & 17: Thumb & Signature */}
-=======
       {/* 15 & 16: Thumb & Signature */}
->>>>>>> 0f631ee937e237007f88a63287fc57869b98c29c
       <div className="grid grid-cols-2 gap-4 md:col-span-2">
 
         {['thumb', 'signature'].map(field => (
@@ -813,15 +990,29 @@ const ApplyForm = () => {
           I hereby declare that the information given above is true and correct to the best of my knowledge.
         </label>
       </div>
-      <div className="text-center md:col-span-2">
-        <button
-          type="submit"
-          disabled={!isFormValid()}
-          className="px-6 py-2 mt-4 text-sm text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          Submit
-        </button>
-      </div>
+      {/* Admin: Save button */}
+      {isAdmin && (
+        <div className="text-center md:col-span-2">
+          <button
+            type="submit"
+            className="px-6 py-2 mt-4 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
+          >
+            Save
+          </button>
+        </div>
+      )}
+      {/* User: Submit button */}
+      {!isAdmin && (
+        <div className="text-center md:col-span-2">
+          <button
+            type="submit"
+            disabled={!isFormValid()}
+            className={`px-6 py-2 mt-4 text-sm text-white rounded hover:bg-blue-700 ${!isFormValid() ? 'bg-blue-200' : 'bg-blue-600'}`}
+          >
+            Submit
+          </button>
+        </div>
+      )}
     </form>
   )
 }

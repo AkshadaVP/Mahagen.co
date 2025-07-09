@@ -9,7 +9,7 @@ const API = import.meta.env.VITE_API_BASE_URL
 
 export default function ReadOnlyApplicationForm() {
   const { user, isLoaded } = useUser()
-  const { email } = useParams()
+  const { id } = useParams()
   const [data, setData]       = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -21,12 +21,27 @@ export default function ReadOnlyApplicationForm() {
     : false
 
   useEffect(() => {
-    fetch(`${API}/api/formdata/${encodeURIComponent(email)}`)
-      .then(res => res.json())
-      .then(json => setData(json))
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [email])
+    if (!id) return;
+    console.log('Fetching application with id:', id);
+    fetch(`${API}/api/formdata/id/${id}`)
+      .then(res => {
+        console.log('Fetch response status:', res.status);
+        if (!res.ok) throw new Error('Not found');
+        return res.json();
+      })
+      .then(json => {
+        console.log('Fetched data:', json);
+        setData(json);
+      })
+      .catch((err) => {
+        setData(null);
+        console.error('Fetch error:', err);
+      })
+      .finally(() => {
+        console.log('Setting loading to false');
+        setLoading(false);
+      });
+  }, [id])
 
   if (loading) return <>
     <Navbar />
@@ -40,12 +55,12 @@ export default function ReadOnlyApplicationForm() {
 
   const {
     applicationFor, postName, division, candidateName, fatherName,
-    community, gender, religion, dateOfBirth, age,
+    community, gender, religion, dateOfBirth, age = {},
     isGovtEmployee, isExServiceman, isPhysicallyHandicapped,
-    visibleMark, qualifications, address, nearestStation,
-    passportPhotoUrl, thumbUrl, signatureUrl, documentUrls,
+    visibleMark, qualifications = [], address = {}, nearestStation = '',
+    passportPhotoUrl, thumbUrl, signatureUrl, documentUrls = [],
     declaration, status
-  } = data
+  } = data || {}
 
   return (
     <>
@@ -58,6 +73,19 @@ export default function ReadOnlyApplicationForm() {
         >
           ← Back
         </Link>
+
+        {/* Employee ID and DOJ at the top, side by side */}
+        <div className="flex gap-8 mb-4">
+          <div>
+            <strong>Employee ID:</strong> {data.empId || 'N/A'}
+          </div>
+          <div>
+            <strong>Date of Joining:</strong>{' '}
+            {data.dojDay && data.dojMonth && data.dojYear
+              ? `${data.dojDay}/${data.dojMonth}/${data.dojYear}`
+              : 'N/A'}
+          </div>
+        </div>
 
         <h1 className="text-2xl font-bold">Application Details</h1>
 
@@ -98,17 +126,15 @@ export default function ReadOnlyApplicationForm() {
           <div><strong>Religion:</strong> {religion}</div>
           <div>
             <strong>Date of Birth:</strong>{' '}
-            {new Date(dateOfBirth).toLocaleDateString()}
+            {dateOfBirth ? new Date(dateOfBirth).toLocaleDateString() : 'N/A'}
           </div>
-          <div>
-            <strong>Age:</strong> {age.years}y {age.months}m {age.days}d
-          </div>
+          <div><strong>Age:</strong> {typeof age.years !== 'undefined' ? `${age.years}y ${age.months}m ${age.days}d` : 'N/A'}</div>
           <div><strong>Govt Employee:</strong> {isGovtEmployee ? 'Yes' : 'No'}</div>
           <div><strong>Ex-Serviceman:</strong> {isExServiceman ? 'Yes' : 'No'}</div>
           <div><strong>Physically Handicapped:</strong> {isPhysicallyHandicapped ? 'Yes' : 'No'}</div>
           <div><strong>Visible Mark:</strong> {visibleMark}</div>
           <div className="md:col-span-2">
-            <strong>Address:</strong> {address.name}, {address.postOffice}, {address.city}, {address.district}, {address.state} – {address.pin}
+            <strong>Address:</strong> {address.name || ''}, {address.postOffice || ''}, {address.city || ''}, {address.district || ''}, {address.state || ''} – {address.pin || ''}
           </div>
           <div><strong>Nearest Station:</strong> {nearestStation}</div>
           <div><strong>Declaration Accepted:</strong> {declaration ? 'Yes' : 'No'}</div>
@@ -129,7 +155,7 @@ export default function ReadOnlyApplicationForm() {
             </thead>
             <tbody>
               {qualifications.map((q, i) => (
-                <tr key={i}>
+                <tr key={`${q.academic || ''}-${q.year || ''}-${i}`}>
                   <td className="p-1 border">{q.academic}</td>
                   <td className="p-1 border">{q.qualification}</td>
                   <td className="p-1 border">{q.board}</td>
@@ -141,12 +167,12 @@ export default function ReadOnlyApplicationForm() {
         </div>
 
         {/* Documents */}
-        {documentUrls.length > 0 && (
+        {documentUrls && documentUrls.length > 0 && (
           <div>
             <strong>Uploaded Documents:</strong>
             <ul className="list-disc list-inside">
               {documentUrls.map((url, i) => (
-                <li key={i}>
+                <li key={url || i}>
                   <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                     Document {i + 1}
                   </a>
